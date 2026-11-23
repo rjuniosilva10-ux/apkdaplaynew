@@ -43,7 +43,6 @@ a{text-decoration:none}
 }
 
 .app{display:flex;min-height:100vh}
-/* Sidebar mantida no HTML mas oculta no CSS para unificar o layout */
 .sidebar{
   display:none !important;
   width:var(--side-w);flex-shrink:0;position:sticky;top:0;height:100vh;
@@ -108,7 +107,6 @@ a{text-decoration:none}
 .topbar-title{display:flex;flex-direction:column;line-height:1.2;min-width:0}
 .topbar-title h1{font-size:15px;font-weight:600}
 .topbar-title span{font-size:11.5px;color:var(--muted2)}
-/* Oculta o mobile-nav antigo para unificar */
 .mobile-nav{display:none !important}
 main{padding:26px 28px calc(var(--player-h) + 40px);width:100%;max-width:1080px;margin:0 auto}
 
@@ -164,6 +162,21 @@ main{padding:26px 28px calc(var(--player-h) + 40px);width:100%;max-width:1080px;
 .icon-btn.fav-on{color:var(--pink)}
 .icon-btn.fav-on svg{fill:var(--pink)}
 .icon-btn.danger:hover{background:rgba(248,113,113,.14);color:#f87171}
+
+/* NOVO: Avatar do topo */
+.top-avatar{
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--grad); color: #06070d;
+  display: grid; place-items: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700; font-size: 16px;
+  box-shadow: 0 4px 12px -2px rgba(167,139,250,.4);
+  flex-shrink: 0;
+  border: 2px solid rgba(255,255,255,.1);
+  transition: transform 0.2s var(--ease);
+  cursor: default;
+}
+.top-avatar:hover { transform: scale(1.05); }
 
 .input{
   width:100%;padding:11px 14px;border-radius:11px;background:var(--bg2);
@@ -483,6 +496,7 @@ html[data-theme="light"] .ctrl-play svg{fill:#fff}
 html[data-theme="light"] .btn-primary{color:#0f1220}
 html[data-theme="light"] .brand-icon{color:#0f1220}
 html[data-theme="light"] .avatar{color:#0f1220}
+html[data-theme="light"] .top-avatar{color:#0f1220; border-color:rgba(0,0,0,.1)}
 html[data-theme="light"] .side-foot-name{color:var(--text)}
 html[data-theme="light"] ::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15)}
 html[data-theme="light"] ::selection{background:rgba(167,139,250,.3)}
@@ -620,7 +634,10 @@ html[data-theme="light"] .access-card{box-shadow:0 40px 80px -30px rgba(0,0,0,.2
         <h1 id="pageTitle">Início</h1>
         <span id="pageSub">Sua música. Sua vibe.</span>
       </div>
+      
+      <!-- ALTERAÇÃO AQUI: Inserido o Avatar do topo -->
       <div style="display:flex;align-items:center;gap:8px">
+        <div class="top-avatar" id="topAvatar" title="Perfil">?</div>
         <button class="theme-toggle" id="themeToggle" title="Alternar tema" aria-label="Alternar tema">
           <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
           <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.07" y2="4.93"/></svg>
@@ -1947,6 +1964,42 @@ async function speakChapter() {
   const btn = $('bibleAudioBtn');
   if (!btn) return;
 
+  if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
+    if (btn.classList.contains('playing')) {
+      resetBibleAudioBtn();
+      try {
+        const { TextToSpeech } = window.Capacitor.Plugins;
+        if (TextToSpeech && TextToSpeech.stop) await TextToSpeech.stop();
+      } catch (e) { console.warn('Erro ao parar TTS nativo', e); }
+      return;
+    }
+
+    const text = ($('bibleText').textContent || '').trim();
+    if (!text) { toast('Nenhum texto para ler.', 'error'); return; }
+
+    try {
+      const { TextToSpeech } = window.Capacitor.Plugins;
+      if (TextToSpeech) {
+        btn.classList.add('playing');
+        btn.innerHTML = ICONS.pause + ' Parar';
+        
+        await TextToSpeech.speak({
+          text: text,
+          lang: 'pt-BR',
+          rate: Number($('bibleSpeedSelect').value) || 1.0,
+          category: 'playback'
+        });
+      } else {
+        toast('Plugin de voz nativo não encontrado. Verifique a instalação.', 'error');
+      }
+    } catch (e) {
+      console.error('Erro no TTS nativo:', e);
+      resetBibleAudioBtn();
+      toast('Erro ao tentar falar usando o sistema Android.', 'error');
+    }
+    return;
+  }
+
   if ('speechSynthesis' in window && state.bibleUtterance && speechSynthesis.speaking) {
     try { speechSynthesis.cancel(); } catch {}
     resetBibleAudioBtn();
@@ -2173,6 +2226,7 @@ async function addMember() {
   }
 }
 
+/* ALTERAÇÃO AQUI: Atualiza o top-avatar junto com o resto do perfil */
 function renderProfile() {
   const p = loadJSON(LS_KEYS.profile, null) || {};
   $('profileName').value = p.name || '';
@@ -2180,6 +2234,14 @@ function renderProfile() {
   $('sideName').textContent = p.name || 'Visitante';
   $('sideEmail').textContent = p.email || 'Sem perfil';
   $('sideAvatar').textContent = (p.name || '?').charAt(0).toUpperCase();
+  
+  // Atualiza o ícone no topo
+  const initial = (p.name || '?').charAt(0).toUpperCase();
+  const topAv = $('topAvatar');
+  if (topAv) {
+    topAv.textContent = initial;
+    topAv.title = p.name || 'Visitante';
+  }
 }
 
 function applyTheme(theme) {
