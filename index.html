@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#08090f">
-<!-- CORREÇÃO 2: CSP -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://i.ytimg.com; frame-src https://www.youtube.com; connect-src 'self' https://raw.githubusercontent.com https://www.youtube.com; media-src 'self' blob:;">
 <title>Daplay — Sua música. Sua vibe.</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%235eead4'/%3E%3Cstop offset='1' stop-color='%23a78bfa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='24' fill='url(%23g)'/%3E%3Cpath d='M62 26v34a10 10 0 1 1-6-9V36l-18 5v26a10 10 0 1 1-6-9V36l30-10z' fill='%2306070d'/%3E%3C/svg%3E">
@@ -39,13 +38,14 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;letter-spacing:-.02em}
 button{font-family:inherit;cursor:pointer}
 a{text-decoration:none}
 @keyframes spin{to{transform:rotate(360deg)}}
-/* CORREÇÃO 9: prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
 }
 
 .app{display:flex;min-height:100vh}
+/* Sidebar mantida no HTML mas oculta no CSS para unificar o layout */
 .sidebar{
+  display:none !important;
   width:var(--side-w);flex-shrink:0;position:sticky;top:0;height:100vh;
   padding:20px 14px calc(var(--player-h) + 20px);
   display:flex;flex-direction:column;gap:4px;
@@ -108,7 +108,8 @@ a{text-decoration:none}
 .topbar-title{display:flex;flex-direction:column;line-height:1.2;min-width:0}
 .topbar-title h1{font-size:15px;font-weight:600}
 .topbar-title span{font-size:11.5px;color:var(--muted2)}
-.mobile-nav{display:none}
+/* Oculta o mobile-nav antigo para unificar */
+.mobile-nav{display:none !important}
 main{padding:26px 28px calc(var(--player-h) + 40px);width:100%;max-width:1080px;margin:0 auto}
 
 .top-tabs{
@@ -541,19 +542,7 @@ html[data-theme="light"] .access-card{box-shadow:0 40px 80px -30px rgba(0,0,0,.2
 @media(max-width:980px){
   :root{--player-h:74px}
   .sidebar{display:none}
-  .mobile-nav{
-    display:flex;gap:6px;overflow-x:auto;padding:10px 16px;
-    position:sticky;top:60px;z-index:24;background:rgba(8,9,15,.92);
-    backdrop-filter:blur(18px);border-bottom:1px solid var(--line);
-    scrollbar-width:none;
-  }
-  .mobile-nav::-webkit-scrollbar{display:none}
-  .chip{
-    padding:7px 14px;border-radius:99px;border:1px solid var(--line);
-    background:var(--card);color:var(--muted);font-size:12.5px;font-weight:600;
-    white-space:nowrap;flex-shrink:0;transition:all .18s var(--ease);
-  }
-  .chip.active{background:var(--grad);color:#06070d;border-color:transparent}
+  .mobile-nav{display:none!important}
   .topbar{padding:0 16px}
   main{padding:20px 16px calc(var(--player-h) + 34px)}
   .player{height:74px;grid-template-columns:1fr auto;gap:10px;padding:0 14px}
@@ -643,15 +632,6 @@ html[data-theme="light"] .access-card{box-shadow:0 40px 80px -30px rgba(0,0,0,.2
       </div>
     </header>
 
-    <nav class="mobile-nav">
-      <button class="chip active" data-nav="home">Início</button>
-      <button class="chip" data-nav="library">Biblioteca</button>
-      <button class="chip" data-nav="favorites">Favoritas</button>
-      <button class="chip" data-nav="youtube">YouTube</button>
-      <button class="chip" data-nav="bible">Bíblia</button>
-      <button class="chip" data-nav="members">Membros</button>
-    </nav>
-
     <main>
       <div class="top-tabs" id="topTabs">
         <button class="tab-btn active" data-tab="all">Tudo</button>
@@ -660,6 +640,8 @@ html[data-theme="light"] .access-card{box-shadow:0 40px 80px -30px rgba(0,0,0,.2
         <button class="tab-btn" data-tab="podcast">Podcast</button>
         <button class="tab-btn" data-tab="desenhos">Desenhos</button>
         <button class="tab-btn" data-tab="bible">Bíblia Offline</button>
+        <button class="tab-btn" data-tab="favorites">Favoritas</button>
+        <button class="tab-btn" data-tab="members">Membros</button>
       </div>
 
       <section id="page-home">
@@ -1097,7 +1079,6 @@ const extractYtId = (url) => {
   return m ? m[1] : null;
 };
 
-/* CORREÇÃO 11: hashPassword com fallback se crypto.subtle indisponível */
 async function hashPassword(password, salt) {
   if (!(window.crypto && crypto.subtle)) {
     throw new Error('Este navegador não suporta criptografia segura (crypto.subtle). Use HTTPS ou localhost.');
@@ -1150,7 +1131,6 @@ function openDB() {
     };
     req.onsuccess = () => {
       const db = req.result;
-      /* CORREÇÃO 12: fechar conexão em versionchange */
       db.onversionchange = () => { try { db.close(); } catch {} dbPromise = null; };
       resolve(db);
     };
@@ -1208,7 +1188,6 @@ const loadJSON = (key, fallback) => {
     return val == null ? fallback : val;
   } catch { return fallback; }
 };
-/* CORREÇÃO 4: saveJSON agora reporta falha de quota */
 const saveJSON = (key, val) => {
   try { localStorage.setItem(key, JSON.stringify(val)); return true; }
   catch (e) { console.warn('localStorage quota/erro em', key, e); return false; }
@@ -1230,12 +1209,11 @@ const state = {
   loggedMember: null,
   adminSession: loadJSON(LS_KEYS.adminSession, null),
   currentTab: 'all',
-  bibleData: null,          /* carregado async de IDB abaixo */
+  bibleData: null,
   bibleUtterance: null
 };
 ['songs','favorites','ytVideos','members'].forEach(k => { if (!Array.isArray(state[k])) state[k] = []; });
 
-/* CORREÇÃO 1: admin padrão removido; primeiro admin é criado no primeiro acesso */
 const MEMBERS_VERSION = 3;
 if (Number(loadJSON(LS_KEYS.membersVersion, 0)) < MEMBERS_VERSION) {
   let changed = false;
@@ -1306,6 +1284,8 @@ function showPage(name) {
   else if (name === 'library') setActiveTab('music');
   else if (name === 'youtube') setActiveTab('youtube');
   else if (name === 'bible') setActiveTab('bible');
+  else if (name === 'favorites') setActiveTab('favorites');
+  else if (name === 'members') setActiveTab('members');
 
   renderPage(name);
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1335,6 +1315,8 @@ function handleTabClick(tab) {
   else if (tab === 'podcast') { ytFilter = 'Podcast'; showPage('youtube'); }
   else if (tab === 'desenhos') { ytFilter = 'Desenhos'; showPage('youtube'); }
   else if (tab === 'bible') showPage('bible');
+  else if (tab === 'favorites') showPage('favorites');
+  else if (tab === 'members') showPage('members');
 }
 
 function updateStats() {
@@ -1389,7 +1371,6 @@ async function importFiles(fileList) {
   if (added > 0) { toast(added + ' música(s) adicionada(s).', 'success'); showPage('library'); }
 }
 
-/* CORREÇÃO 8: cancela speechSynthesis ao tocar música */
 async function playSong(id, queue) {
   const song = getSong(id);
   if (!song) return;
@@ -1508,7 +1489,6 @@ function updateVolumeUI() {
   $('muteBtn').innerHTML = (audio.muted || audio.volume === 0) ? ICONS.volOff : ICONS.volOn;
 }
 
-/* CORREÇÃO 17: aria-pressed nos botões de estado */
 function renderPlayer() {
   const song = getSong(state.currentId);
   const playing = !!song && !audio.paused;
@@ -1598,7 +1578,6 @@ async function deleteSong(id) {
   toast('Música excluída.', 'success');
 }
 
-/* CORREÇÃO 5: DocumentFragment nos renders */
 function renderLibrary() {
   const list = $('libraryList'); if (!list) return;
   const search = ($('searchInput').value || '').toLowerCase().trim();
@@ -1695,7 +1674,6 @@ function renderHomeYt() {
   grid.appendChild(frag);
 }
 
-/* CORREÇÃO 15: encodeURIComponent no iframe */
 function playYtSaved(videoId) {
   if (!videoId) { toast('Vídeo inválido.', 'error'); return; }
   const player = $('youtubePlayer');
@@ -1714,7 +1692,6 @@ function deleteYtVideo(id) {
   toast('Vídeo removido.', 'success');
 }
 
-/* CORREÇÃO 9: fetchYtMeta real via oEmbed público */
 async function fetchYtMeta(videoId) {
   try {
     const url = 'https://www.youtube.com/oembed?url=' + encodeURIComponent('https://www.youtube.com/watch?v=' + videoId) + '&format=json';
@@ -1756,18 +1733,14 @@ const BIBLE_BOOKS = [
   'Hebreus','Tiago','1 Pedro','2 Pedro','1 João','2 João','3 João','Judas','Apocalipse'
 ];
 
-/* CORREÇÃO 3: URL pinada em commit + validação de schema */
 const BIBLE_URL = 'https://raw.githubusercontent.com/thiagobodruk/bible/3c1e7b8f4f2c3e8b4d0e1a6c9f5b2d7e8a3c1f0d/json/pt_aa.json';
-/* Fallback: se o commit pinado falhar, tenta o master (com aviso) */
 const BIBLE_URL_FALLBACK = 'https://raw.githubusercontent.com/thiagobodruk/bible/master/json/pt_aa.json';
 
-/* CORREÇÃO 4: Bíblia em IndexedDB (store 'meta') */
 async function loadBibleFromIDB() {
   try {
     const data = await idbGet('meta', 'bibleData');
     if (Array.isArray(data) && data.length) { state.bibleData = data; return true; }
   } catch (e) { console.warn('IDB bible read falhou', e); }
-  /* Migração: se estava no localStorage, move para IDB */
   const legacy = loadJSON(LS_KEYS.bibleData, null);
   if (Array.isArray(legacy) && legacy.length) {
     state.bibleData = legacy;
@@ -1795,8 +1768,6 @@ function validateBible(raw) {
   }
   return out;
 }
-
-/* ============ BÍBLIA — instalação e leitura ============ */
 
 function renderBible() {
   const reBtn = $('bibleReinstallBtn');
@@ -1919,43 +1890,124 @@ function renderChapter() {
   ).join('');
 }
 
-function speakChapter() {
-  if (!('speechSynthesis' in window)) {
-    toast('Seu navegador não suporta áudio de texto.', 'error');
+function getVoicesAsync(timeoutMs = 1500) {
+  return new Promise((resolve) => {
+    if (!('speechSynthesis' in window)) { resolve([]); return; }
+    const tryGet = () => {
+      const v = speechSynthesis.getVoices();
+      if (v && v.length) return v;
+      return null;
+    };
+    const immediate = tryGet();
+    if (immediate) { resolve(immediate); return; }
+    let done = false;
+    const finish = (v) => {
+      if (done) return;
+      done = true;
+      try { speechSynthesis.onvoiceschanged = null; } catch {}
+      resolve(v || []);
+    };
+    try {
+      speechSynthesis.onvoiceschanged = () => {
+        const v = tryGet();
+        if (v) finish(v);
+      };
+    } catch {}
+    let tries = 0;
+    const iv = setInterval(() => {
+      tries++;
+      const v = tryGet();
+      if (v) { clearInterval(iv); finish(v); }
+      else if (tries * 200 >= timeoutMs) { clearInterval(iv); finish([]); }
+    }, 200);
+    setTimeout(() => { clearInterval(iv); finish(tryGet() || []); }, timeoutMs + 100);
+  });
+}
+
+function pickPtBrVoice(voices) {
+  if (!voices || !voices.length) return null;
+  const norm = (s) => String(s || '').toLowerCase().replace('_', '-');
+  return (
+    voices.find(v => norm(v.lang).startsWith('pt-br')) ||
+    voices.find(v => norm(v.lang).startsWith('pt')) ||
+    voices.find(v => /portugu/i.test(v.name || '')) ||
+    voices[0]
+  );
+}
+
+function resetBibleAudioBtn() {
+  const b = $('bibleAudioBtn');
+  if (!b) return;
+  b.classList.remove('playing');
+  b.innerHTML = ICONS.play + ' Ouvir Capítulo';
+  state.bibleUtterance = null;
+}
+
+async function speakChapter() {
+  const btn = $('bibleAudioBtn');
+  if (!btn) return;
+
+  if ('speechSynthesis' in window && state.bibleUtterance && speechSynthesis.speaking) {
+    try { speechSynthesis.cancel(); } catch {}
+    resetBibleAudioBtn();
     return;
   }
-  if (!state.bibleData) return;
 
-  if (state.bibleUtterance && speechSynthesis.speaking) {
-    speechSynthesis.cancel();
-    state.bibleUtterance = null;
-    $('bibleAudioBtn').classList.remove('playing');
-    $('bibleAudioBtn').innerHTML = ICONS.play + ' Ouvir Capítulo';
+  if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
+    toast('Este navegador não oferece leitura em voz alta. Tente Chrome, Edge ou Safari atualizado.', 'error');
     return;
   }
 
-  const text = $('bibleText').textContent.trim();
-  if (!text) return;
+  if (!state.bibleData) { toast('Instale a Bíblia primeiro.', 'error'); return; }
+
+  const text = ($('bibleText').textContent || '').trim();
+  if (!text) { toast('Nenhum texto para ler.', 'error'); return; }
+
+  const voices = await getVoicesAsync(1500);
 
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = 'pt-BR';
   utter.rate = Number($('bibleSpeedSelect').value) || 1.0;
-  utter.onend = () => {
-    $('bibleAudioBtn').classList.remove('playing');
-    $('bibleAudioBtn').innerHTML = ICONS.play + ' Ouvir Capítulo';
-    state.bibleUtterance = null;
-  };
-  utter.onerror = () => {
-    $('bibleAudioBtn').classList.remove('playing');
-    $('bibleAudioBtn').innerHTML = ICONS.play + ' Ouvir Capítulo';
-    state.bibleUtterance = null;
+  utter.pitch = 1.0;
+  utter.volume = 1.0;
+
+  const voice = pickPtBrVoice(voices);
+  if (voice) {
+    utter.voice = voice;
+    if (!/^pt/i.test(voice.lang || '')) utter.lang = voice.lang || 'pt-BR';
+  }
+
+  utter.onend = () => resetBibleAudioBtn();
+  utter.onerror = (e) => {
+    const err = e && e.error ? e.error : '';
+    if (err !== 'interrupted' && err !== 'canceled') {
+      console.warn('SpeechSynthesis erro:', err);
+      toast('Falha ao reproduzir o áudio (' + (err || 'desconhecido') + ').', 'error');
+    }
+    resetBibleAudioBtn();
   };
 
   state.bibleUtterance = utter;
-  $('bibleAudioBtn').classList.add('playing');
-  $('bibleAudioBtn').innerHTML = ICONS.pause + ' Parar';
-  speechSynthesis.cancel();
-  speechSynthesis.speak(utter);
+  btn.classList.add('playing');
+  btn.innerHTML = ICONS.pause + ' Parar';
+
+  try {
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utter);
+  } catch (e) {
+    console.error('speechSynthesis.speak falhou:', e);
+    resetBibleAudioBtn();
+    toast('Não foi possível iniciar o áudio neste navegador.', 'error');
+    return;
+  }
+
+  setTimeout(() => {
+    if (!state.bibleUtterance) return;
+    if (!speechSynthesis.speaking && !speechSynthesis.pending) {
+      resetBibleAudioBtn();
+      toast('O navegador bloqueou ou não encontrou voz para português. Verifique as vozes do sistema (Configurações → Idioma).', 'error');
+    }
+  }, 1200);
 }
 
 (function bindBibleListeners() {
@@ -2010,7 +2062,6 @@ function speakChapter() {
   }
 })();
 
-/* ===== Membros / Admin / Acesso ===== */
 function renderMembers() {
   const logged = !!state.adminSession;
   $('adminLoginView').classList.toggle('hidden', logged);
@@ -2048,7 +2099,6 @@ function renderMembersList() {
   grid.appendChild(frag);
 }
 
-/* CORREÇÃO 1: sem admin hardcoded. Primeiro admin é criado no primeiro acesso. */
 async function adminLogin() {
   const email = $('adminEmail').value.trim().toLowerCase();
   const pass = $('adminPassword').value;
@@ -2058,7 +2108,6 @@ async function adminLogin() {
 
   const admins = state.members.filter(m => (m.role || '').toLowerCase() === 'admin');
 
-  /* Primeiro acesso: se não há admin, cria um com as credenciais digitadas */
   if (admins.length === 0) {
     try {
       const salt = genSalt();
@@ -2087,7 +2136,6 @@ async function adminLogin() {
     }
   }
 
-  /* Login normal */
   const member = admins.find(m => (m.email || '').toLowerCase() === email);
   if (!member || !member.passwordHash) { err.textContent = 'Credenciais inválidas.'; err.style.display = 'block'; return; }
   try {
@@ -2139,7 +2187,6 @@ function applyTheme(theme) {
   saveJSON(LS_KEYS.theme, theme);
 }
 
-/* ===== Inicialização ===== */
 (async function init() {
   const savedTheme = loadJSON(LS_KEYS.theme, 'dark');
   applyTheme(savedTheme === 'light' ? 'light' : 'dark');
@@ -2272,7 +2319,6 @@ function applyTheme(theme) {
     $('accessPassword').value = '';
   });
 
-  /* Carrega Bíblia do IDB (async) antes do primeiro render */
   await loadBibleFromIDB();
 
   renderProfile();
@@ -2282,7 +2328,6 @@ function applyTheme(theme) {
   renderBible();
   showPage('home');
 
-  /* Sessão de membro salva? */
   const session = loadJSON(LS_KEYS.session, null);
   if (session && session.email) {
     const m = state.members.find(x => (x.email || '').toLowerCase() === session.email);
@@ -2296,7 +2341,6 @@ function applyTheme(theme) {
       $('accessScreen').classList.remove('hidden');
     }
   } else {
-    /* Primeiro acesso: sem membros, deixa passar; admin cria depois */
     if (state.members.length === 0) {
       $('accessScreen').classList.add('hidden');
     } else {
