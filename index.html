@@ -705,14 +705,22 @@ html[data-theme="light"] .yt-channel-name,html[data-theme="light"] .member-name{
 <script>
 'use strict';
 
-/* ============================================================
-   CONFIGURAÇÃO SUPABASE — SUBSTITUA AQUI
-   ============================================================ */
-const SUPABASE_URL = 'https://SEU_PROJETO.supabase.co';
+/* ============================================================================
+   CONFIGURAÇÃO SUPABASE 
+   Deixe como está para usar o MODO DEMO (local).
+   Substitua com suas chaves reais para ativar a nuvem.
+   ============================================================================ */
+const SUPABASE_URL = 'https://SEU_PROJETO.supabase.co'; 
 const SUPABASE_ANON_KEY = 'SUA_ANON_KEY_AQUI';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
-});
+
+const isLocalMode = SUPABASE_URL.includes('SEU_PROJETO') || SUPABASE_ANON_KEY.includes('SUA_ANON');
+
+let sb = null;
+if (!isLocalMode) {
+  sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+  });
+}
 
 /* ============================================================
    HELPERS
@@ -746,7 +754,7 @@ const debounce = (fn, ms) => {
 };
 
 /* ============================================================
-   INDEXEDDB (apenas blobs de áudio — continua local)
+   INDEXEDDB (Blobs de áudio e Bíblia)
    ============================================================ */
 const DB_NAME = 'daplay-db';
 let dbPromise = null;
@@ -799,15 +807,11 @@ async function idbDel(store, key) {
 }
 
 /* ============================================================
-   LS — apenas dados NÃO sincronizados (tema, bíblia)
+   LS — Apenas tema e dados do Modo Demo
    ============================================================ */
 const LS_KEYS = {
   theme: 'daplay.theme.v1',
-  bibleData: 'daplay.bible.data.v1',
-  // Legado (migração):
-  legacySongs: 'daplay.songs.v5',
-  legacyFavs: 'daplay.favorites.v5',
-  legacyYt: 'daplay.ytVideos.v5'
+  demoMembers: 'daplay.demo.members'
 };
 const loadJSON = (key, fallback) => {
   try {
@@ -876,7 +880,7 @@ function toast(msg, type) {
 }
 
 /* ============================================================
-   AUTH — Supabase
+   AUTH — Supabase & Local Demo
    ============================================================ */
 const authViews = ['authLoading', 'authLoginView', 'authSignupView', 'authPendingView'];
 function showAuthView(name) {
@@ -902,9 +906,9 @@ async function bootstrapAuth() {
   $('accessScreen').classList.remove('hidden');
   showAuthView('authLoading');
 
-  if (SUPABASE_URL.includes('SEU_PROJETO') || SUPABASE_ANON_KEY.includes('SUA_ANON')) {
+  if (isLocalMode) {
     showAuthView('authLoginView');
-    showAuthError('authError', 'Configure SUPABASE_URL e SUPABASE_ANON_KEY no código.');
+    showAuthError('authError', 'MODO DEMO ATIVADO. Login: admin@daplay.com / Senha: admin123');
     return;
   }
 
@@ -935,6 +939,28 @@ async function doLogin() {
   const password = $('authPassword').value;
   if (!email || !password) return showAuthError('authError', 'Preencha e-mail e senha.');
 
+  if (isLocalMode) {
+    if (email === 'admin@daplay.com' && password === 'admin123') {
+      state.session = { user: { id: 'admin-1', email } };
+      state.profile = { id: 'admin-1', name: 'Administrador', role: 'admin', approved: true };
+      await loadUserData('admin-1');
+      enterApp();
+    } else {
+      const members = loadJSON(LS_KEYS.demoMembers, []);
+      const m = members.find(x => x.email === email && x.password === password);
+      if (m) {
+        if (!m.approved) { showAuthView('authPendingView'); return; }
+        state.session = { user: { id: m.id, email: m.email } };
+        state.profile = m;
+        await loadUserData(m.id);
+        enterApp();
+      } else {
+        showAuthError('authError', 'E-mail ou senha inválidos no Modo Demo.');
+      }
+    }
+    return;
+  }
+
   const btn = $('authLoginBtn');
   btn.disabled = true; btn.textContent = 'Entrando...';
   const { error } = await sb.auth.signInWithPassword({ email, password });
@@ -951,6 +977,19 @@ async function doSignup() {
   if (!name || !email || password.length < 8) {
     return showAuthError('signupError', 'Preencha tudo. Senha mín. 8 caracteres.');
   }
+
+  if (isLocalMode) {
+    const members = loadJSON(LS_KEYS.demoMembers, []);
+    if (members.some(m => m.email === email) || email === 'admin@daplay.com') {
+      return showAuthError('signupError', 'E-mail já cadastrado.');
+    }
+    members.push({ id: uid('user'), name, email, password, role: 'member', approved: false });
+    saveJSON(LS_KEYS.demoMembers, members);
+    toast('Conta criada! Aguarde aprovação do admin.', 'success');
+    showAuthView('authLoginView');
+    return;
+  }
+
   const btn = $('authSignupBtn');
   btn.disabled = true; btn.textContent = 'Criando...';
   const { error } = await sb.auth.signUp({ email, password, options: { data: { name } } });
@@ -960,16 +999,23 @@ async function doSignup() {
 }
 
 async function doLogout() {
-  try { await sb.auth.signOut(); } catch {}
+  if (!isLocalMode) { try { await sb.auth.signOut(); } catch {} }
   state.session = null; state.profile = null;
   state.songs = []; state.favorites = []; state.ytVideos = [];
   location.reload();
 }
 
 /* ============================================================
-   CARREGAR DADOS DO USUÁRIO (Opção C — híbrido)
+   CARREGAR DADOS DO USUÁRIO
    ============================================================ */
 async function loadUserData(userId) {
+  if (isLocalMode) {
+    state.songs = loadJSON('daplay.demo.songs.' + userId, []);
+    state.favorites = loadJSON('daplay.demo.favs.' + userId, []);
+    state.ytVideos = loadJSON('daplay.demo.yt.' + userId, []);
+    return;
+  }
+
   const [songsRes, favsRes, ytRes] = await Promise.all([
     sb.from('songs').select('*').eq('user_id', userId).order('added_at', { ascending: false }),
     sb.from('favorites').select('song_id').eq('user_id', userId),
@@ -992,59 +1038,6 @@ async function loadUserData(userId) {
     category: v.category || 'Músicas',
     addedAt: new Date(v.added_at).getTime()
   }));
-
-  await migrateLegacyLocalData(userId);
-}
-
-async function migrateLegacyLocalData(userId) {
-  const oldSongs = loadJSON(LS_KEYS.legacySongs, null);
-  const oldFavs  = loadJSON(LS_KEYS.legacyFavs, null);
-  const oldYt    = loadJSON(LS_KEYS.legacyYt, null);
-  const hasOld = (oldSongs?.length || 0) + (oldFavs?.length || 0) + (oldYt?.length || 0);
-  if (!hasOld) return;
-  if (state.songs.length || state.favorites.length || state.ytVideos.length) return;
-
-  try {
-    if (oldSongs?.length) {
-      const rows = oldSongs.map(s => ({
-        id: s.id, user_id: userId, name: s.name,
-        duration: Number(s.duration) || 0, size: Number(s.size) || 0,
-        added_at: new Date(s.addedAt || Date.now()).toISOString()
-      }));
-      const { error } = await sb.from('songs').insert(rows);
-      if (error) throw error;
-      state.songs = oldSongs.map(s => ({
-        id: s.id, name: s.name, duration: Number(s.duration) || 0,
-        size: Number(s.size) || 0, storage_path: null,
-        addedAt: s.addedAt || Date.now()
-      }));
-    }
-    if (oldFavs?.length) {
-      const rows = oldFavs.map(id => ({ user_id: userId, song_id: id }));
-      await sb.from('favorites').insert(rows);
-      state.favorites = oldFavs.slice();
-    }
-    if (oldYt?.length) {
-      const rows = oldYt.map(v => ({
-        id: v.id, user_id: userId, video_id: v.videoId,
-        title: v.title, author: v.author,
-        category: v.category || 'Músicas',
-        added_at: new Date(v.addedAt || Date.now()).toISOString()
-      }));
-      await sb.from('yt_videos').insert(rows);
-      state.ytVideos = oldYt.map(v => ({
-        id: v.id, videoId: v.videoId, title: v.title,
-        author: v.author, category: v.category || 'Músicas',
-        addedAt: v.addedAt || Date.now()
-      }));
-    }
-    localStorage.removeItem(LS_KEYS.legacySongs);
-    localStorage.removeItem(LS_KEYS.legacyFavs);
-    localStorage.removeItem(LS_KEYS.legacyYt);
-    toast('Biblioteca local migrada para a nuvem!', 'success');
-  } catch (e) {
-    console.error('Migração falhou', e);
-  }
 }
 
 /* ============================================================
@@ -1147,10 +1140,16 @@ function updateStats() {
   $('statYt').textContent = state.ytVideos.length;
   $('badgeSongs').textContent = state.songs.length;
   $('badgeFavs').textContent = state.favorites.length;
+  
   if (state.profile?.role === 'admin') {
-    sb.from('profiles').select('*', { count: 'exact', head: true }).then(({ count }) => {
-      if (count !== null) $('statMembers').textContent = count;
-    }).catch(() => {});
+    if (isLocalMode) {
+      const members = loadJSON(LS_KEYS.demoMembers, []);
+      $('statMembers').textContent = members.length + 1;
+    } else {
+      sb.from('profiles').select('*', { count: 'exact', head: true }).then(({ count }) => {
+        if (count !== null) $('statMembers').textContent = count;
+      }).catch(() => {});
+    }
   }
 }
 
@@ -1200,17 +1199,22 @@ async function importFiles(fileList) {
         duration, size: file.size, storage_path: null,
         addedAt: Date.now()
       };
-      // Salva blob local
       try { await idbPut('blobs', id, file); } catch (e) { console.warn('IDB falhou', e); }
-      // Salva metadado no Supabase
-      const { error } = await sb.from('songs').insert({
-        id, user_id: state.session.user.id, name: song.name,
-        duration: song.duration, size: song.size,
-        added_at: new Date(song.addedAt).toISOString()
-      });
-      if (error) { console.error(error); continue; }
-      state.songs.push(song);
-      added++;
+      
+      if (isLocalMode) {
+        state.songs.push(song);
+        saveJSON('daplay.demo.songs.' + state.session.user.id, state.songs);
+        added++;
+      } else {
+        const { error } = await sb.from('songs').insert({
+          id, user_id: state.session.user.id, name: song.name,
+          duration: song.duration, size: song.size,
+          added_at: new Date(song.addedAt).toISOString()
+        });
+        if (error) { console.error(error); continue; }
+        state.songs.push(song);
+        added++;
+      }
     } catch (e) { console.error('Erro ao importar', file.name, e); }
   }
   updateStats();
@@ -1222,6 +1226,7 @@ async function importFiles(fileList) {
    CLOUD — upload/download
    ============================================================ */
 async function uploadSongToCloud(songId) {
+  if (isLocalMode) { toast('Indisponível no Modo Demo.', 'info'); return; }
   if (state.uploading.has(songId)) return;
   const song = getSong(songId);
   if (!song) return;
@@ -1258,6 +1263,7 @@ async function uploadSongToCloud(songId) {
 }
 
 async function downloadSongFromCloud(songId) {
+  if (isLocalMode) return false;
   const song = getSong(songId);
   if (!song?.storage_path) return false;
   const cached = await idbGet('blobs', songId).catch(() => null);
@@ -1432,11 +1438,16 @@ function buildSongRow(song, opts) {
   row.className = 'song-row' + (isCurrent ? ' playing' : '');
   row.dataset.id = song.id;
 
-  const badge = song.storage_path
-    ? '<span class="sync-badge cloud" title="Na nuvem">☁️</span>'
-    : '<span class="sync-badge local" title="Somente local">💾</span>';
+  let badge = '';
+  if (isLocalMode) {
+    badge = '<span class="sync-badge local" title="Modo Demo">💾</span>';
+  } else {
+    badge = song.storage_path
+      ? '<span class="sync-badge cloud" title="Na nuvem">☁️</span>'
+      : '<span class="sync-badge local" title="Somente local">💾</span>';
+  }
 
-  const uploadBtn = song.storage_path ? '' :
+  const uploadBtn = (song.storage_path || isLocalMode) ? '' :
     `<button class="cloud-upload-btn" data-upload="${esc(song.id)}" title="Enviar para a nuvem">${ICONS.upload}</button>`;
 
   row.innerHTML =
@@ -1469,15 +1480,21 @@ function bindSongList(listEl, queue) {
 async function toggleFavorite(id) {
   if (!state.session) return;
   const i = state.favorites.indexOf(id);
+  if (i === -1) state.favorites.push(id); else state.favorites.splice(i, 1);
+
+  if (isLocalMode) {
+    saveJSON('daplay.demo.favs.' + state.session.user.id, state.favorites);
+    updateStats(); renderRecent(); renderLibrary(); renderFavorites();
+    return;
+  }
+
   if (i === -1) {
     const { error } = await sb.from('favorites').insert({ user_id: state.session.user.id, song_id: id });
     if (error) { toast('Erro ao favoritar.', 'error'); return; }
-    state.favorites.push(id);
   } else {
     const { error } = await sb.from('favorites').delete()
       .eq('user_id', state.session.user.id).eq('song_id', id);
     if (error) { toast('Erro ao desfavoritar.', 'error'); return; }
-    state.favorites.splice(i, 1);
   }
   updateStats();
   renderRecent(); renderLibrary(); renderFavorites();
@@ -1487,6 +1504,18 @@ async function deleteSong(id) {
   if (!confirm('Excluir esta música? O arquivo será removido.')) return;
   const song = getSong(id);
   if (!song) return;
+
+  if (isLocalMode) {
+    state.songs = state.songs.filter(s => s.id !== id);
+    state.favorites = state.favorites.filter(f => f !== id);
+    saveJSON('daplay.demo.songs.' + state.session.user.id, state.songs);
+    saveJSON('daplay.demo.favs.' + state.session.user.id, state.favorites);
+    try { await idbDel('blobs', id); } catch {}
+    if (state.currentId === id) { audio.pause(); audio.src = ''; state.currentId = null; renderPlayer(); }
+    updateStats(); renderLibrary(); renderFavorites(); renderRecent();
+    toast('Música excluída.', 'success');
+    return;
+  }
 
   if (song.storage_path) {
     try { await sb.storage.from('music').remove([song.storage_path]); } catch {}
@@ -1619,6 +1648,15 @@ function playYtSaved(videoId) {
 
 async function deleteYtVideo(id) {
   if (!confirm('Excluir este vídeo da sua lista?')) return;
+
+  if (isLocalMode) {
+    state.ytVideos = state.ytVideos.filter(v => v.id !== id);
+    saveJSON('daplay.demo.yt.' + state.session.user.id, state.ytVideos);
+    updateStats(); renderYtVideos(); renderHomeYt();
+    toast('Vídeo removido.', 'success');
+    return;
+  }
+
   const { error } = await sb.from('yt_videos').delete().eq('id', id);
   if (error) { toast('Erro: ' + error.message, 'error'); return; }
   state.ytVideos = state.ytVideos.filter(v => v.id !== id);
@@ -1648,6 +1686,16 @@ async function saveYtVideo() {
   if (state.ytVideos.some(v => v.videoId === videoId)) { toast('Vídeo já salvo.', 'error'); return; }
   const cat = $('youtubeCategory').value;
   const meta = await fetchYtMeta(videoId);
+  
+  if (isLocalMode) {
+    const video = { id: uid('yt'), videoId, title: meta.title, author: meta.author, category: cat, addedAt: Date.now() };
+    state.ytVideos.unshift(video);
+    saveJSON('daplay.demo.yt.' + state.session.user.id, state.ytVideos);
+    input.value = ''; updateStats(); renderYtVideos(); renderHomeYt();
+    toast('Vídeo salvo.', 'success');
+    return;
+  }
+
   const video = {
     id: uid('yt'), videoId, title: meta.title,
     author: meta.author, category: cat, addedAt: Date.now()
@@ -1671,6 +1719,45 @@ async function saveYtVideo() {
 async function renderMembers() {
   if (state.profile?.role !== 'admin') return;
   $('adminPanelView').classList.remove('hidden');
+
+  if (isLocalMode) {
+    let members = loadJSON(LS_KEYS.demoMembers, []);
+    if (!members.find(m => m.email === 'admin@daplay.com')) {
+      members.unshift({ id: 'admin-1', name: 'Administrador', email: 'admin@daplay.com', role: 'admin', approved: true });
+      saveJSON(LS_KEYS.demoMembers, members);
+    }
+    
+    $('membersCount').textContent = members.length + ' membros (Modo Demo)';
+    const grid = $('membersGrid'); grid.innerHTML = '';
+    members.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'member-card';
+      const isMe = p.id === state.session.user.id;
+      card.innerHTML = `
+        <div class="member-avatar">${esc(p.name.charAt(0).toUpperCase())}</div>
+        <div class="member-info">
+          <div class="member-name">${esc(p.name)}</div>
+          <div class="member-email">${esc(p.email)}</div>
+          <div class="member-role">${esc(p.role)} · ${p.approved ? 'aprovado' : 'pendente'}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          ${!p.approved ? `<button class="btn btn-primary btn-sm" data-approve="${p.id}">Aprovar</button>` : ''}
+          ${p.role === 'member' && p.approved ? `<button class="btn btn-ghost btn-sm" data-revoke="${p.id}">Revogar</button>` : ''}
+        </div>`;
+      grid.appendChild(card);
+    });
+    grid.querySelectorAll('[data-approve]').forEach(b => b.onclick = () => {
+      const list = loadJSON(LS_KEYS.demoMembers, []);
+      const m = list.find(x => x.id === b.dataset.approve);
+      if (m) { m.approved = true; saveJSON(LS_KEYS.demoMembers, list); renderMembers(); updateStats(); }
+    });
+    grid.querySelectorAll('[data-revoke]').forEach(b => b.onclick = () => {
+      const list = loadJSON(LS_KEYS.demoMembers, []);
+      const m = list.find(x => x.id === b.dataset.revoke);
+      if (m) { m.approved = false; saveJSON(LS_KEYS.demoMembers, list); renderMembers(); updateStats(); }
+    });
+    return;
+  }
 
   const { data, error } = await sb.from('profiles').select('*')
     .order('created_at', { ascending: false });
@@ -1718,10 +1805,23 @@ async function updateProfile(id, patch) {
    ============================================================ */
 const BIBLE_URL = 'https://raw.githubusercontent.com/thiagobodruk/bible/master/json/aa.json';
 
-function renderBible() {
+async function renderBible() {
   const installView = $('bibleInstallView');
   const readView = $('bibleReadView');
-  const cached = loadJSON(LS_KEYS.bibleData, null);
+
+  let cached = await idbGet('meta', 'bibleData').catch(() => null);
+  if (!cached) {
+    // Fallback para versões antigas que usavam localStorage
+    const rawLS = localStorage.getItem('daplay.bible.data.v1');
+    if (rawLS) {
+      try {
+        cached = JSON.parse(rawLS);
+        await idbPut('meta', 'bibleData', cached);
+        localStorage.removeItem('daplay.bible.data.v1');
+      } catch(e) {}
+    }
+  }
+
   if (!cached) {
     installView.classList.remove('hidden');
     readView.classList.add('hidden');
@@ -1732,7 +1832,7 @@ function renderBible() {
   state.bibleData = cached;
 
   const bookSelect = $('bibleBookSelect');
-  if (!bookSelect.options.length) {
+  if (bookSelect.options.length === 0) {
     cached.forEach((book, i) => {
       const opt = document.createElement('option');
       opt.value = i;
@@ -1776,11 +1876,15 @@ async function installBible() {
     const res = await fetch(BIBLE_URL);
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
-    saveJSON(LS_KEYS.bibleData, data);
-    toast('Bíblia instalada!', 'success');
+    
+    // Salva no IndexedDB (suporta arquivos grandes)
+    await idbPut('meta', 'bibleData', data);
+    
+    toast('Bíblia instalada com sucesso!', 'success');
     renderBible();
   } catch (e) {
-    toast('Erro ao baixar Bíblia: ' + e.message, 'error');
+    console.error('Erro Bíblia:', e);
+    toast('Erro ao baixar Bíblia: ' + (e.message || 'Verifique a conexão ou se o link está ativo.'), 'error');
   } finally {
     btn.disabled = false;
     btn.textContent = 'Instalar Bíblia';
@@ -1929,13 +2033,15 @@ function initListeners() {
   };
 
   // Auth state sync (outra aba)
-  sb.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_OUT') {
-      state.session = null; state.profile = null;
-      showAuthView('authLoginView');
-      $('accessScreen').classList.remove('hidden');
-    }
-  });
+  if (!isLocalMode) {
+    sb.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        state.session = null; state.profile = null;
+        showAuthView('authLoginView');
+        $('accessScreen').classList.remove('hidden');
+      }
+    });
+  }
 }
 
 /* ============================================================
