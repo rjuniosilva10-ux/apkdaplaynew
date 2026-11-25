@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#08090f">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://i.ytimg.com https://*.supabase.co; frame-src https://www.youtube.com; connect-src 'self' https://*.supabase.co https://raw.githubusercontent.com https://www.youtube.com; media-src 'self' blob: https://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://i.ytimg.com https://*.supabase.co; frame-src https://www.youtube.com https://www.youtube-nocookie.com; connect-src 'self' https://*.supabase.co https://www.youtube.com; media-src 'self' blob: https://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self';">
 <title>Daplay — Sua música. Sua vibe.</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%235eead4'/%3E%3Cstop offset='1' stop-color='%23a78bfa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='24' fill='url(%23g)'/%3E%3Cpath d='M62 26v34a10 10 0 1 1-6-9V36l-18 5v26a10 10 0 1 1-6-9V36l30-10z' fill='%2306070d'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -43,7 +43,7 @@ a{text-decoration:none}
 }
 .app{display:flex;min-height:100vh}
 .sidebar{
-  display:none !important;
+  display:flex;
   width:var(--side-w);flex-shrink:0;position:sticky;top:0;height:100vh;
   padding:20px 14px calc(var(--player-h) + 20px);
   flex-direction:column;gap:4px;
@@ -190,16 +190,6 @@ select.input option{background:var(--card2);color:var(--text)}
 .member-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .member-email{font-size:11px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .member-role{font-size:10px;color:var(--cyan);margin-top:2px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
-.bible-controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
-.bible-select{flex:1;min-width:120px}
-.bible-speed-select{width:130px;flex:none}
-.bible-text{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:24px;line-height:1.8;font-size:15px;max-height:500px;overflow-y:auto;font-family:'Georgia',serif}
-.bible-text .verse{display:block;margin-bottom:6px}
-.bible-text .verse-num{color:var(--cyan);font-weight:700;font-size:11px;margin-right:6px;font-family:'Inter',sans-serif}
-.bible-audio-btn{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:99px;background:var(--grad-soft);border:1px solid var(--line);color:var(--text);font-size:12.5px;font-weight:600;transition:all .18s var(--ease)}
-.bible-audio-btn:hover{background:rgba(94,234,212,.15);border-color:rgba(94,234,212,.4)}
-.bible-audio-btn.playing{background:var(--cyan);color:#06070d;border-color:transparent}
-.bible-install-box{text-align:center;padding:40px 20px}
 .player{position:fixed;left:0;right:0;bottom:0;height:var(--player-h);z-index:100;display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,540px) minmax(0,1fr);align-items:center;gap:20px;padding:0 20px;background:rgba(10,12,18,.88);backdrop-filter:blur(24px) saturate(150%);border-top:1px solid var(--line)}
 .np{display:flex;align-items:center;gap:12px;min-width:0}
 .np-cover{width:50px;height:50px;border-radius:12px;background:var(--card2);display:grid;place-items:center;color:rgba(0,0,0,.55);flex-shrink:0;overflow:hidden;position:relative}
@@ -286,7 +276,7 @@ html[data-theme="light"] .yt-channel-name,html[data-theme="light"] .member-name{
 .access-title{font-size:22px;text-align:center;margin-bottom:6px;color:var(--text)}
 .access-title span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 .access-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:20px;line-height:1.5}
-.access-error{color:#f87171;font-size:12.5px;margin-top:8px;padding:8px 10px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);border-radius:9px}
+.access-error{color:#f87171;font-size:12.5px;margin-top:8px;padding:8px 10px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);border-radius:9px;white-space:pre-wrap;}
 #authLoading .access-logo svg{animation:spin 1s linear infinite}
 @media(max-width:980px){
   :root{--player-h:74px}
@@ -344,10 +334,6 @@ html[data-theme="light"] .yt-channel-name,html[data-theme="light"] .member-name{
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="4"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor" stroke="none"/></svg>
       YouTube
     </button>
-    <button class="nav-btn" data-nav="bible">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-      Bíblia
-    </button>
     <button class="nav-btn" data-nav="members">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       Membros
@@ -390,7 +376,6 @@ html[data-theme="light"] .yt-channel-name,html[data-theme="light"] .member-name{
         <button class="tab-btn" data-tab="youtube">YouTube</button>
         <button class="tab-btn" data-tab="podcast">Podcast</button>
         <button class="tab-btn" data-tab="desenhos">Desenhos</button>
-        <button class="tab-btn" data-tab="bible">Bíblia Offline</button>
         <button class="tab-btn" data-tab="favorites">Favoritas</button>
         <button class="tab-btn" data-tab="members">Membros</button>
       </div>
@@ -533,53 +518,49 @@ html[data-theme="light"] .yt-channel-name,html[data-theme="light"] .member-name{
         </div>
       </section>
 
-      <section id="page-bible" class="hidden">
-        <div class="card">
-          <div class="card-head">
-            <div>
-              <h2>Bíblia Sagrada</h2>
-              <p id="bibleVersionLabel">Almeida Atualizada</p>
-            </div>
-            <button class="btn btn-ghost btn-sm" id="bibleReinstallBtn" title="Baixar/atualizar dados da Bíblia">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 5 17 10"/><line x1="12" y1="5" x2="12" y2="17"/></svg>
-              Reinstalar
-            </button>
-          </div>
-          <div id="bibleInstallView" class="bible-install-box hidden">
-            <div class="empty-icon" style="margin-bottom:16px; width:64px; height:64px;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 5 17 10"/><line x1="12" y1="5" x2="12" y2="17"/></svg>
-            </div>
-            <h3 style="margin-bottom:8px">Instalar Bíblia Completa</h3>
-            <p style="color:var(--muted); font-size:13px; max-width:400px; margin:0 auto 20px; line-height:1.6;">
-              Baixe os dados da Bíblia Sagrada (Almeida Atualizada) para leitura e áudio offline. O download pode levar alguns segundos.
-            </p>
-            <button class="btn btn-primary" id="bibleInstallBtn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 5 17 10"/><line x1="12" y1="5" x2="12" y2="17"/></svg>
-              Instalar Bíblia
-            </button>
-          </div>
-          <div id="bibleReadView" class="hidden">
-            <div class="bible-controls">
-              <select class="input bible-select" id="bibleBookSelect"></select>
-              <select class="input bible-select" id="bibleChapterSelect"></select>
-              <select class="input bible-speed-select" id="bibleSpeedSelect">
-                <option value="0.75">Lenta</option>
-                <option value="1.0" selected>Normal</option>
-                <option value="1.25">Rápida</option>
-                <option value="1.5">Muito Rápida</option>
-              </select>
-              <button class="bible-audio-btn" id="bibleAudioBtn">
-                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><polygon points="6 4 20 12 6 20"/></svg>
-                Ouvir Capítulo
-              </button>
-            </div>
-            <div class="bible-text" id="bibleText">Selecione um livro e capítulo para ler.</div>
-          </div>
-        </div>
-      </section>
-
       <section id="page-members" class="hidden">
         <div id="adminPanelView" class="hidden">
+          <div class="card">
+            <div class="card-head">
+              <div><h2>Compartilhar Aplicativo</h2><p>Envie o link do APK para os usuários</p></div>
+            </div>
+            <div class="row">
+              <input class="input" id="apkLinkInput" placeholder="Cole aqui o link do seu APK (Drive, GitHub, etc)">
+              <button class="btn btn-primary" id="saveApkLinkBtn">Salvar Link</button>
+            </div>
+            <div style="margin-top:16px; display:flex; gap:8px; flex-wrap:wrap">
+              <button class="btn" id="shareApkBtn" style="flex:1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                Compartilhar Link
+              </button>
+              <a id="downloadApkBtn" class="btn btn-ghost" style="flex:1" target="_blank" href="#">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Baixar APK
+              </a>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div><h2>Criar Novo Membro</h2><p>Apenas administradores podem criar novas contas</p></div>
+            </div>
+            <div class="row">
+              <div class="field" style="flex:1; min-width:140px; margin:0">
+                <input class="input" id="newMemberName" placeholder="Nome">
+              </div>
+              <div class="field" style="flex:1; min-width:180px; margin:0">
+                <input class="input" id="newMemberEmail" type="email" placeholder="E-mail">
+              </div>
+              <div class="field" style="flex:1; min-width:140px; margin:0">
+                <input class="input" id="newMemberPassword" type="text" placeholder="Senha inicial">
+              </div>
+              <button class="btn btn-primary" id="createMemberBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Criar Membro
+              </button>
+            </div>
+          </div>
+
           <div class="card">
             <div class="card-head">
               <div><h2>Membros</h2><p id="membersCount">—</p></div>
@@ -668,21 +649,6 @@ html[data-theme="light"] .yt-channel-name,html[data-theme="light"] .member-name{
       <div class="field"><label for="authPassword">Senha</label><input class="input" id="authPassword" type="password" autocomplete="current-password"></div>
       <div id="authError" class="access-error" style="display:none"></div>
       <button class="btn btn-primary" id="authLoginBtn" style="width:100%;margin-top:6px">Entrar</button>
-      <button class="btn btn-ghost btn-sm" id="authGoSignup" style="width:100%;margin-top:8px">Criar conta</button>
-    </div>
-
-    <div id="authSignupView" class="hidden">
-      <div class="access-logo">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
-      </div>
-      <h2 class="access-title">Criar conta</h2>
-      <p class="access-sub">Cadastre-se e aguarde aprovação do administrador.</p>
-      <div class="field"><label for="signupName">Nome</label><input class="input" id="signupName" type="text" autocomplete="name"></div>
-      <div class="field"><label for="signupEmail">E-mail</label><input class="input" id="signupEmail" type="email" autocomplete="username"></div>
-      <div class="field"><label for="signupPassword">Senha (mín. 8 caracteres)</label><input class="input" id="signupPassword" type="password" autocomplete="new-password"></div>
-      <div id="signupError" class="access-error" style="display:none"></div>
-      <button class="btn btn-primary" id="authSignupBtn" style="width:100%;margin-top:6px">Criar conta</button>
-      <button class="btn btn-ghost btn-sm" id="authGoLogin" style="width:100%;margin-top:8px">Já tenho conta</button>
     </div>
 
     <div id="authPendingView" class="hidden">
@@ -706,14 +672,14 @@ html[data-theme="light"] .yt-channel-name,html[data-theme="light"] .member-name{
 'use strict';
 
 /* ============================================================================
-   CONFIGURAÇÃO SUPABASE 
-   Deixe como está para usar o MODO DEMO (local).
+   CONFIGURAÇÃO SUPABASE
    Substitua com suas chaves reais para ativar a nuvem.
    ============================================================================ */
-const SUPABASE_URL = 'https://SEU_PROJETO.supabase.co'; 
+const SUPABASE_URL = 'https://SEU_PROJETO.supabase.co';
 const SUPABASE_ANON_KEY = 'SUA_ANON_KEY_AQUI';
 
-const isLocalMode = SUPABASE_URL.includes('SEU_PROJETO') || SUPABASE_ANON_KEY.includes('SUA_ANON');
+const isSupabaseLoaded = typeof supabase !== 'undefined';
+const isLocalMode = !isSupabaseLoaded || SUPABASE_URL.includes('SEU_PROJETO') || SUPABASE_ANON_KEY.includes('SUA_ANON');
 
 let sb = null;
 if (!isLocalMode) {
@@ -754,7 +720,7 @@ const debounce = (fn, ms) => {
 };
 
 /* ============================================================
-   INDEXEDDB (Blobs de áudio e Bíblia)
+   INDEXEDDB (Blobs de áudio)
    ============================================================ */
 const DB_NAME = 'daplay-db';
 let dbPromise = null;
@@ -807,11 +773,12 @@ async function idbDel(store, key) {
 }
 
 /* ============================================================
-   LS — Apenas tema e dados do Modo Demo
+   LS
    ============================================================ */
 const LS_KEYS = {
   theme: 'daplay.theme.v1',
-  demoMembers: 'daplay.demo.members'
+  demoMembers: 'daplay.demo.members',
+  apkLink: 'daplay.apk.link'
 };
 const loadJSON = (key, fallback) => {
   try {
@@ -842,8 +809,8 @@ const state = {
   repeat: 'off',
   currentObjectURL: null,
   currentTab: 'all',
-  bibleData: null,
-  bibleUtterance: null,
+  currentPage: 'home',
+  ytFilter: 'all',
   uploading: new Set()
 };
 
@@ -880,25 +847,48 @@ function toast(msg, type) {
 }
 
 /* ============================================================
-   AUTH — Supabase & Local Demo
+   TEMA
    ============================================================ */
-const authViews = ['authLoading', 'authLoginView', 'authSignupView', 'authPendingView'];
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', theme === 'light' ? '#f5f6fa' : '#08090f');
+  try { localStorage.setItem(LS_KEYS.theme, theme); } catch {}
+}
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
+}
+function initTheme() {
+  let theme = 'dark';
+  try {
+    const saved = localStorage.getItem(LS_KEYS.theme);
+    if (saved === 'light' || saved === 'dark') theme = saved;
+    else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) theme = 'light';
+  } catch {}
+  applyTheme(theme);
+}
+
+/* ============================================================
+   AUTH
+   ============================================================ */
+const authViews = ['authLoading', 'authLoginView', 'authPendingView'];
 function showAuthView(name) {
   authViews.forEach(id => $(id).classList.toggle('hidden', id !== name));
 }
-function showAuthError(target, msg) {
-  const el = $(target); if (!el) return;
+function showAuthError(msg) {
+  const el = $('authError'); if (!el) return;
   el.textContent = msg; el.style.display = 'block';
 }
 function clearAuthErrors() {
-  ['authError', 'signupError'].forEach(id => { const e = $(id); if (e) e.style.display = 'none'; });
+  const e = $('authError'); if (e) { e.style.display = 'none'; e.textContent = ''; }
 }
 function translateAuthError(err) {
   const m = (err?.message || '').toLowerCase();
   if (m.includes('invalid login')) return 'E-mail ou senha incorretos.';
   if (m.includes('already registered')) return 'Este e-mail já tem conta.';
   if (m.includes('email not confirmed')) return 'Confirme seu e-mail antes de entrar.';
-  if (m.includes('password')) return 'Senha inválida (mín. 8 caracteres).';
+  if (m.includes('password')) return 'Senha inválida (mín. 6 caracteres).';
   return err?.message || 'Erro inesperado.';
 }
 
@@ -908,36 +898,54 @@ async function bootstrapAuth() {
 
   if (isLocalMode) {
     showAuthView('authLoginView');
-    showAuthError('authError', 'MODO DEMO ATIVADO. Login: admin@daplay.com / Senha: admin123');
+    const msg = isSupabaseLoaded
+      ? '⚠️ MODO DEMO ATIVADO.\nLogin: admin@daplay.com · Senha: admin123'
+      : '⚠️ CDN do Supabase bloqueado. MODO DEMO ATIVADO.\nLogin: admin@daplay.com · Senha: admin123';
+    showAuthError(msg);
     return;
   }
 
-  const { data: { session }, error } = await sb.auth.getSession();
-  if (error) console.error('getSession', error);
+  const timeout = setTimeout(() => {
+    if (!$('authLoading').classList.contains('hidden')) {
+      showAuthView('authLoginView');
+      showAuthError('Tempo esgotado. Verifique a internet ou as chaves do Supabase.');
+    }
+  }, 8000);
 
-  state.session = session;
-  if (!session) { showAuthView('authLoginView'); return; }
+  try {
+    const { data: { session }, error } = await sb.auth.getSession();
+    clearTimeout(timeout);
+    if (error) throw error;
 
-  const { data: profile, error: pErr } = await sb
-    .from('profiles').select('*').eq('id', session.user.id).single();
+    state.session = session;
+    if (!session) { showAuthView('authLoginView'); return; }
 
-  if (pErr || !profile) {
-    await sb.auth.signOut();
+    const { data: profile, error: pErr } = await sb
+      .from('profiles').select('*').eq('id', session.user.id).single();
+
+    if (pErr || !profile) {
+      await sb.auth.signOut();
+      showAuthView('authLoginView');
+      return;
+    }
+    state.profile = profile;
+    if (!profile.approved) { showAuthView('authPendingView'); return; }
+
+    await loadUserData(session.user.id);
+    enterApp();
+  } catch (err) {
+    clearTimeout(timeout);
+    console.error('Auth error:', err);
     showAuthView('authLoginView');
-    return;
+    showAuthError('Falha de conexão: ' + (err?.message || err));
   }
-  state.profile = profile;
-  if (!profile.approved) { showAuthView('authPendingView'); return; }
-
-  await loadUserData(session.user.id);
-  enterApp();
 }
 
 async function doLogin() {
   clearAuthErrors();
   const email = $('authEmail').value.trim();
   const password = $('authPassword').value;
-  if (!email || !password) return showAuthError('authError', 'Preencha e-mail e senha.');
+  if (!email || !password) { showAuthError('Preencha e-mail e senha.'); return; }
 
   if (isLocalMode) {
     if (email === 'admin@daplay.com' && password === 'admin123') {
@@ -945,19 +953,19 @@ async function doLogin() {
       state.profile = { id: 'admin-1', name: 'Administrador', role: 'admin', approved: true };
       await loadUserData('admin-1');
       enterApp();
-    } else {
-      const members = loadJSON(LS_KEYS.demoMembers, []);
-      const m = members.find(x => x.email === email && x.password === password);
-      if (m) {
-        if (!m.approved) { showAuthView('authPendingView'); return; }
-        state.session = { user: { id: m.id, email: m.email } };
-        state.profile = m;
-        await loadUserData(m.id);
-        enterApp();
-      } else {
-        showAuthError('authError', 'E-mail ou senha inválidos no Modo Demo.');
-      }
+      return;
     }
+    const members = loadJSON(LS_KEYS.demoMembers, []);
+    const m = members.find(x => x.email === email && x.password === password);
+    if (m) {
+      if (!m.approved) { showAuthView('authPendingView'); return; }
+      state.session = { user: { id: m.id, email: m.email } };
+      state.profile = m;
+      await loadUserData(m.id);
+      enterApp();
+      return;
+    }
+    showAuthError('E-mail ou senha inválidos no Modo Demo.');
     return;
   }
 
@@ -965,36 +973,7 @@ async function doLogin() {
   btn.disabled = true; btn.textContent = 'Entrando...';
   const { error } = await sb.auth.signInWithPassword({ email, password });
   btn.disabled = false; btn.textContent = 'Entrar';
-  if (error) return showAuthError('authError', translateAuthError(error));
-  await bootstrapAuth();
-}
-
-async function doSignup() {
-  clearAuthErrors();
-  const name = $('signupName').value.trim();
-  const email = $('signupEmail').value.trim();
-  const password = $('signupPassword').value;
-  if (!name || !email || password.length < 8) {
-    return showAuthError('signupError', 'Preencha tudo. Senha mín. 8 caracteres.');
-  }
-
-  if (isLocalMode) {
-    const members = loadJSON(LS_KEYS.demoMembers, []);
-    if (members.some(m => m.email === email) || email === 'admin@daplay.com') {
-      return showAuthError('signupError', 'E-mail já cadastrado.');
-    }
-    members.push({ id: uid('user'), name, email, password, role: 'member', approved: false });
-    saveJSON(LS_KEYS.demoMembers, members);
-    toast('Conta criada! Aguarde aprovação do admin.', 'success');
-    showAuthView('authLoginView');
-    return;
-  }
-
-  const btn = $('authSignupBtn');
-  btn.disabled = true; btn.textContent = 'Criando...';
-  const { error } = await sb.auth.signUp({ email, password, options: { data: { name } } });
-  btn.disabled = false; btn.textContent = 'Criar conta';
-  if (error) return showAuthError('signupError', translateAuthError(error));
+  if (error) { showAuthError(translateAuthError(error)); return; }
   await bootstrapAuth();
 }
 
@@ -1006,7 +985,7 @@ async function doLogout() {
 }
 
 /* ============================================================
-   CARREGAR DADOS DO USUÁRIO
+   DADOS DO USUÁRIO
    ============================================================ */
 async function loadUserData(userId) {
   if (isLocalMode) {
@@ -1022,6 +1001,10 @@ async function loadUserData(userId) {
     sb.from('yt_videos').select('*').eq('user_id', userId).order('added_at', { ascending: false })
   ]);
 
+  if (songsRes.error) console.warn('Erro ao carregar músicas:', songsRes.error);
+  if (favsRes.error) console.warn('Erro ao carregar favoritos:', favsRes.error);
+  if (ytRes.error) console.warn('Erro ao carregar YouTube:', ytRes.error);
+
   state.songs = (songsRes.data || []).map(s => ({
     id: s.id, name: s.name,
     duration: Number(s.duration) || 0,
@@ -1031,7 +1014,6 @@ async function loadUserData(userId) {
   }));
 
   state.favorites = (favsRes.data || []).map(f => f.song_id);
-
   state.ytVideos = (ytRes.data || []).map(v => ({
     id: v.id, videoId: v.video_id,
     title: v.title, author: v.author,
@@ -1041,7 +1023,7 @@ async function loadUserData(userId) {
 }
 
 /* ============================================================
-   UI — aplicar perfil
+   UI
    ============================================================ */
 function applyProfileToUI() {
   const initial = (state.profile?.name || 'U').trim().charAt(0).toUpperCase();
@@ -1064,6 +1046,8 @@ function enterApp() {
   renderPage('home');
   renderPlayer();
   updateVolumeUI();
+  setActiveTab('all');
+  showPage('home');
 }
 
 /* ============================================================
@@ -1074,7 +1058,6 @@ const PAGE_META = {
   library: { title: 'Biblioteca', sub: 'Todas as suas músicas' },
   favorites: { title: 'Favoritas', sub: 'As músicas que você ama' },
   youtube: { title: 'YouTube', sub: 'Vídeos salvos' },
-  bible: { title: 'Bíblia Offline', sub: 'Almeida Atualizada' },
   members: { title: 'Membros', sub: 'Gerencie os membros do Daplay' }
 };
 
@@ -1085,6 +1068,7 @@ function showPage(name) {
     toast('Apenas administradores.', 'error');
     return showPage('home');
   }
+  state.currentPage = name;
   document.querySelectorAll('[id^="page-"]').forEach(p => {
     p.classList.toggle('hidden', p.id !== 'page-' + name);
   });
@@ -1098,7 +1082,6 @@ function showPage(name) {
   if (name === 'home') setActiveTab('all');
   else if (name === 'library') setActiveTab('music');
   else if (name === 'youtube') setActiveTab('youtube');
-  else if (name === 'bible') setActiveTab('bible');
   else if (name === 'favorites') setActiveTab('favorites');
   else if (name === 'members') setActiveTab('members');
 
@@ -1112,7 +1095,6 @@ function renderPage(name) {
   else if (name === 'favorites') renderFavorites();
   else if (name === 'youtube') renderYtVideos();
   else if (name === 'members') renderMembers();
-  else if (name === 'bible') renderBible();
 }
 
 function setActiveTab(tabName) {
@@ -1123,15 +1105,13 @@ function setActiveTab(tabName) {
 }
 
 function handleTabClick(tab) {
-  if (tab === 'podcast') { ytFilter = 'Podcast'; showPage('youtube'); setActiveTab('podcast'); return; }
-  if (tab === 'desenhos') { ytFilter = 'Desenhos'; showPage('youtube'); setActiveTab('desenhos'); return; }
-  setActiveTab(tab);
-  if (tab === 'all') showPage('home');
-  else if (tab === 'music') showPage('library');
-  else if (tab === 'youtube') { ytFilter = 'all'; showPage('youtube'); }
-  else if (tab === 'bible') showPage('bible');
-  else if (tab === 'favorites') showPage('favorites');
-  else if (tab === 'members') showPage('members');
+  if (tab === 'podcast') { state.ytFilter = 'Podcast'; showPage('youtube'); setActiveTab('podcast'); return; }
+  if (tab === 'desenhos') { state.ytFilter = 'Desenhos'; showPage('youtube'); setActiveTab('desenhos'); return; }
+  if (tab === 'all') { setActiveTab('all'); showPage('home'); }
+  else if (tab === 'music') { setActiveTab('music'); showPage('library'); }
+  else if (tab === 'youtube') { state.ytFilter = 'all'; setActiveTab('youtube'); showPage('youtube'); }
+  else if (tab === 'favorites') { setActiveTab('favorites'); showPage('favorites'); }
+  else if (tab === 'members') { setActiveTab('members'); showPage('members'); }
 }
 
 function updateStats() {
@@ -1140,15 +1120,21 @@ function updateStats() {
   $('statYt').textContent = state.ytVideos.length;
   $('badgeSongs').textContent = state.songs.length;
   $('badgeFavs').textContent = state.favorites.length;
-  
+
   if (state.profile?.role === 'admin') {
     if (isLocalMode) {
       const members = loadJSON(LS_KEYS.demoMembers, []);
       $('statMembers').textContent = members.length + 1;
     } else {
-      sb.from('profiles').select('*', { count: 'exact', head: true }).then(({ count }) => {
-        if (count !== null) $('statMembers').textContent = count;
-      }).catch(() => {});
+      // Contagem pontual (não em cada updateStats)
+      if (state._membersCount === undefined) {
+        sb.from('profiles').select('*', { count: 'exact', head: true }).then(({ count }) => {
+          state._membersCount = count || 0;
+          $('statMembers').textContent = count || 0;
+        }).catch(() => {});
+      } else {
+        $('statMembers').textContent = state._membersCount;
+      }
     }
   }
 }
@@ -1191,16 +1177,16 @@ async function importFiles(fileList) {
   toast('Importando ' + files.length + ' arquivo(s)...');
   let added = 0;
   for (const file of files) {
+    const id = uid('song');
     try {
-      const id = uid('song');
       const duration = await getAudioDuration(file);
       const song = {
         id, name: file.name.replace(/\.[^.]+$/, ''),
         duration, size: file.size, storage_path: null,
         addedAt: Date.now()
       };
-      try { await idbPut('blobs', id, file); } catch (e) { console.warn('IDB falhou', e); }
-      
+      await idbPut('blobs', id, file);
+
       if (isLocalMode) {
         state.songs.push(song);
         saveJSON('daplay.demo.songs.' + state.session.user.id, state.songs);
@@ -1211,19 +1197,30 @@ async function importFiles(fileList) {
           duration: song.duration, size: song.size,
           added_at: new Date(song.addedAt).toISOString()
         });
-        if (error) { console.error(error); continue; }
+        if (error) {
+          console.error(error);
+          await idbDel('blobs', id).catch(() => {});
+          continue;
+        }
         state.songs.push(song);
         added++;
       }
-    } catch (e) { console.error('Erro ao importar', file.name, e); }
+    } catch (e) {
+      console.error('Erro ao importar', file.name, e);
+      await idbDel('blobs', id).catch(() => {});
+    }
   }
   updateStats();
-  renderPage('home');
-  if (added > 0) { toast(added + ' música(s) adicionada(s).', 'success'); showPage('library'); }
+  if (added > 0) {
+    toast(added + ' música(s) adicionada(s).', 'success');
+    showPage('library');
+  } else {
+    toast('Nenhuma música foi adicionada.', 'error');
+  }
 }
 
 /* ============================================================
-   CLOUD — upload/download
+   CLOUD
    ============================================================ */
 async function uploadSongToCloud(songId) {
   if (isLocalMode) { toast('Indisponível no Modo Demo.', 'info'); return; }
@@ -1255,8 +1252,10 @@ async function uploadSongToCloud(songId) {
 
     song.storage_path = path;
     toast('Música enviada!', 'success');
-    renderPage(state.currentTab === 'music' ? 'library' : 'home');
-    renderLibrary(); renderRecent(); renderFavorites();
+    const cur = state.currentPage;
+    if (cur === 'library') renderLibrary();
+    else if (cur === 'favorites') renderFavorites();
+    else renderRecent();
   } finally {
     state.uploading.delete(songId);
   }
@@ -1282,17 +1281,13 @@ async function downloadSongFromCloud(songId) {
 async function playSong(id, queue) {
   const song = getSong(id);
   if (!song) return;
-  if ('speechSynthesis' in window) {
-    try { speechSynthesis.cancel(); } catch {}
-    state.bibleUtterance = null;
-    const bBtn = $('bibleAudioBtn');
-    if (bBtn) { bBtn.classList.remove('playing'); bBtn.innerHTML = ICONS.play + ' Ouvir Capítulo'; }
-  }
   if (Array.isArray(queue) && queue.length) {
     state.queue = queue.slice();
     state.queueIdx = Math.max(0, state.queue.indexOf(id));
   } else if (state.queue.indexOf(id) === -1) {
-    state.queue = [id]; state.queueIdx = 0;
+    // preserva contexto da fila atual; se vazia, cria
+    if (!state.queue.length) { state.queue = [id]; state.queueIdx = 0; }
+    else { state.queue.splice(state.queueIdx + 1, 0, id); state.queueIdx++; }
   } else state.queueIdx = state.queue.indexOf(id);
 
   let blob = await idbGet('blobs', id).catch(() => null);
@@ -1307,9 +1302,9 @@ async function playSong(id, queue) {
   state.currentObjectURL = URL.createObjectURL(blob);
   state.currentId = id;
   audio.src = state.currentObjectURL;
-  try { await audio.play(); } catch (e) { console.warn('Autoplay bloqueado', e); }
-  setupMediaSession(song.name, 'Daplay');
   renderPlayer();
+  try { await audio.play(); } catch (e) { console.warn('Autoplay bloqueado', e); renderPlayer(); }
+  setupMediaSession(song.name, 'Daplay');
   renderLibrary(); renderFavorites(); renderRecent();
 }
 
@@ -1349,15 +1344,24 @@ function nextTrack(auto) {
       else { audio.pause(); return; }
     }
   }
-  state.queueIdx = pos; playSong(state.queue[pos]);
+  state.queueIdx = pos;
+  playSong(state.queue[pos]);
 }
 
 function prevTrack() {
   if (!state.queue.length) return;
   if (audio.currentTime > 3) { audio.currentTime = 0; return; }
   const pos = state.queueIdx - 1 < 0 ? state.queue.length - 1 : state.queueIdx - 1;
-  state.queueIdx = pos; playSong(state.queue[pos]);
+  state.queueIdx = pos;
+  playSong(state.queue[pos]);
 }
+
+function toggleShuffle() { state.shuffle = !state.shuffle; renderPlayer(); }
+function cycleRepeat() {
+  state.repeat = state.repeat === 'off' ? 'all' : state.repeat === 'all' ? 'one' : 'off';
+  renderPlayer();
+}
+function toggleMute() { audio.muted = !audio.muted; updateVolumeUI(); }
 
 audio.addEventListener('timeupdate', updateProgress);
 audio.addEventListener('loadedmetadata', updateProgress);
@@ -1383,13 +1387,15 @@ function updateProgress() {
   const dur = isFinite(audio.duration) ? audio.duration : 0;
   const cur = audio.currentTime || 0;
   const pct = dur > 0 ? (cur / dur) * 100 : 0;
-  const bar = $('progressBar'); bar.value = pct; bar.style.setProperty('--p', pct + '%');
+  const bar = $('progressBar');
+  if (!bar) return;
+  bar.value = pct; bar.style.setProperty('--p', pct + '%');
   $('timeCurrent').textContent = fmtTime(cur);
   $('timeTotal').textContent = fmtTime(dur);
 }
 
 function updateVolumeUI() {
-  const vol = $('volumeBar');
+  const vol = $('volumeBar'); if (!vol) return;
   const v = audio.muted ? 0 : Math.round(audio.volume * 100);
   vol.value = v; vol.style.setProperty('--p', v + '%');
   $('muteBtn').innerHTML = (audio.muted || audio.volume === 0) ? ICONS.volOff : ICONS.volOn;
@@ -1438,14 +1444,11 @@ function buildSongRow(song, opts) {
   row.className = 'song-row' + (isCurrent ? ' playing' : '');
   row.dataset.id = song.id;
 
-  let badge = '';
-  if (isLocalMode) {
-    badge = '<span class="sync-badge local" title="Modo Demo">💾</span>';
-  } else {
-    badge = song.storage_path
-      ? '<span class="sync-badge cloud" title="Na nuvem">☁️</span>'
-      : '<span class="sync-badge local" title="Somente local">💾</span>';
-  }
+  let badge;
+  if (isLocalMode) badge = '<span class="sync-badge local" title="Modo Demo">💾</span>';
+  else badge = song.storage_path
+    ? '<span class="sync-badge cloud" title="Na nuvem">☁️</span>'
+    : '<span class="sync-badge local" title="Somente local">💾</span>';
 
   const uploadBtn = (song.storage_path || isLocalMode) ? '' :
     `<button class="cloud-upload-btn" data-upload="${esc(song.id)}" title="Enviar para a nuvem">${ICONS.upload}</button>`;
@@ -1505,13 +1508,21 @@ async function deleteSong(id) {
   const song = getSong(id);
   if (!song) return;
 
+  const wasCurrent = state.currentId === id;
+
   if (isLocalMode) {
     state.songs = state.songs.filter(s => s.id !== id);
     state.favorites = state.favorites.filter(f => f !== id);
+    state.queue = state.queue.filter(q => q !== id);
+    if (state.queueIdx >= state.queue.length) state.queueIdx = Math.max(0, state.queue.length - 1);
     saveJSON('daplay.demo.songs.' + state.session.user.id, state.songs);
     saveJSON('daplay.demo.favs.' + state.session.user.id, state.favorites);
     try { await idbDel('blobs', id); } catch {}
-    if (state.currentId === id) { audio.pause(); audio.src = ''; state.currentId = null; renderPlayer(); }
+    if (wasCurrent) {
+      audio.pause(); audio.src = ''; state.currentId = null;
+      if (state.currentObjectURL) { URL.revokeObjectURL(state.currentObjectURL); state.currentObjectURL = null; }
+      renderPlayer();
+    }
     updateStats(); renderLibrary(); renderFavorites(); renderRecent();
     toast('Música excluída.', 'success');
     return;
@@ -1525,12 +1536,14 @@ async function deleteSong(id) {
 
   state.songs = state.songs.filter(s => s.id !== id);
   state.favorites = state.favorites.filter(f => f !== id);
-  if (state.currentId === id) {
+  state.queue = state.queue.filter(q => q !== id);
+  if (state.queueIdx >= state.queue.length) state.queueIdx = Math.max(0, state.queue.length - 1);
+
+  if (wasCurrent) {
     audio.pause(); audio.src = ''; state.currentId = null;
     if (state.currentObjectURL) { URL.revokeObjectURL(state.currentObjectURL); state.currentObjectURL = null; }
     renderPlayer();
   }
-  if (state.queueIdx >= state.queue.length) state.queueIdx = 0;
   try { await idbDel('blobs', id); } catch {}
   updateStats();
   renderLibrary(); renderFavorites(); renderRecent();
@@ -1574,7 +1587,7 @@ function renderRecent() {
   const recent = state.songs.slice().sort((a, b) => (b.addedAt || 0) - (a.addedAt || 0)).slice(0, 5);
   list.innerHTML = '';
   if (!recent.length) { list.innerHTML = emptyHTML(ICONS.note, 'Nada por aqui ainda', 'Importe suas primeiras músicas acima.'); return; }
-  const queue = state.songs.map(s => s.id);
+  const queue = state.songs.slice().sort((a, b) => (b.addedAt || 0) - (a.addedAt || 0)).map(s => s.id);
   const frag = document.createDocumentFragment();
   recent.forEach(song => frag.appendChild(buildSongRow(song, {})));
   list.appendChild(frag);
@@ -1584,35 +1597,48 @@ function renderRecent() {
 /* ============================================================
    YOUTUBE
    ============================================================ */
-let ytFilter = 'all';
+function buildYtCard(v, opts) {
+  opts = opts || {};
+  const cat = v.category || 'Músicas';
+  const card = document.createElement('div'); card.className = 'yt-card';
+  const delBtn = opts.showDelete
+    ? '<button class="yt-card-del" data-del="' + esc(v.id) + '" title="Excluir vídeo">' + ICONS.trash + '</button>'
+    : '';
+  card.innerHTML =
+    '<div class="yt-thumb">' +
+      '<span class="yt-cat-badge" data-cat="' + esc(cat) + '">' + esc(cat) + '</span>' +
+      '<img src="https://i.ytimg.com/vi/' + encodeURIComponent(v.videoId) + '/mqdefault.jpg" alt="" loading="lazy">' +
+      '<div class="yt-play-overlay">' + ICONS.play + '</div>' + delBtn +
+    '</div>' +
+    '<div class="yt-card-body">' +
+      '<div class="yt-card-title">' + esc(v.title) + '</div>' +
+      '<div class="yt-card-meta">' + esc(v.author || 'YouTube') + '</div>' +
+    '</div>';
+  // fallback de thumb via listener (sem inline onerror)
+  const img = card.querySelector('img');
+  if (img) img.addEventListener('error', () => { img.style.display = 'none'; });
+  card.addEventListener('click', (e) => {
+    if (e.target.closest('[data-del]')) { e.stopPropagation(); deleteYtVideo(v.id); return; }
+    playYtSaved(v.videoId);
+  });
+  return card;
+}
 
 function renderYtVideos() {
   const grid = $('ytSavedGrid'); if (!grid) return;
   const total = state.ytVideos.length;
   $('ytSavedCount').textContent = total + ' vídeo' + (total !== 1 ? 's' : '') + ' salvo' + (total !== 1 ? 's' : '');
-  document.querySelectorAll('.yt-filter-chip').forEach(c => { c.classList.toggle('active', c.dataset.cat === ytFilter); });
-  const list = ytFilter === 'all' ? state.ytVideos : state.ytVideos.filter(v => (v.category || 'Músicas') === ytFilter);
+  document.querySelectorAll('.yt-filter-chip').forEach(c => {
+    c.classList.toggle('active', c.dataset.cat === state.ytFilter);
+  });
+  const list = state.ytFilter === 'all'
+    ? state.ytVideos
+    : state.ytVideos.filter(v => (v.category || 'Músicas') === state.ytFilter);
   grid.innerHTML = '';
   if (!total) { grid.innerHTML = '<div class="yt-empty-cat">Nenhum vídeo salvo ainda.</div>'; return; }
-  if (!list.length) { grid.innerHTML = '<div class="yt-empty-cat">Nenhum vídeo em "' + esc(ytFilter) + '".</div>'; return; }
+  if (!list.length) { grid.innerHTML = '<div class="yt-empty-cat">Nenhum vídeo em "' + esc(state.ytFilter) + '".</div>'; return; }
   const frag = document.createDocumentFragment();
-  list.forEach(v => {
-    const cat = v.category || 'Músicas';
-    const card = document.createElement('div'); card.className = 'yt-card';
-    card.innerHTML =
-      '<div class="yt-thumb">' +
-        '<span class="yt-cat-badge" data-cat="' + esc(cat) + '">' + esc(cat) + '</span>' +
-        '<img src="https://i.ytimg.com/vi/' + encodeURIComponent(v.videoId) + '/mqdefault.jpg" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
-        '<div class="yt-play-overlay">' + ICONS.play + '</div>' +
-        '<button class="yt-card-del" data-del="' + esc(v.id) + '" title="Excluir vídeo">' + ICONS.trash + '</button>' +
-      '</div>' +
-      '<div class="yt-card-body"><div class="yt-card-title">' + esc(v.title) + '</div><div class="yt-card-meta">' + esc(v.author || 'YouTube') + '</div></div>';
-    card.addEventListener('click', (e) => {
-      if (e.target.closest('[data-del]')) { e.stopPropagation(); deleteYtVideo(v.id); return; }
-      playYtSaved(v.videoId);
-    });
-    frag.appendChild(card);
-  });
+  list.forEach(v => frag.appendChild(buildYtCard(v, { showDelete: true })));
   grid.appendChild(frag);
 }
 
@@ -1622,26 +1648,16 @@ function renderHomeYt() {
   grid.innerHTML = '';
   if (!list.length) { grid.innerHTML = '<div class="yt-empty-cat">Nenhum vídeo salvo ainda.</div>'; return; }
   const frag = document.createDocumentFragment();
-  list.forEach(v => {
-    const cat = v.category || 'Músicas';
-    const card = document.createElement('div'); card.className = 'yt-card';
-    card.innerHTML =
-      '<div class="yt-thumb">' +
-        '<span class="yt-cat-badge" data-cat="' + esc(cat) + '">' + esc(cat) + '</span>' +
-        '<img src="https://i.ytimg.com/vi/' + encodeURIComponent(v.videoId) + '/mqdefault.jpg" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
-        '<div class="yt-play-overlay">' + ICONS.play + '</div>' +
-      '</div>' +
-      '<div class="yt-card-body"><div class="yt-card-title">' + esc(v.title) + '</div><div class="yt-card-meta">' + esc(v.author || 'YouTube') + '</div></div>';
-    card.addEventListener('click', () => playYtSaved(v.videoId));
-    frag.appendChild(card);
-  });
+  list.forEach(v => frag.appendChild(buildYtCard(v, {})));
   grid.appendChild(frag);
 }
 
 function playYtSaved(videoId) {
   if (!videoId) { toast('Vídeo inválido.', 'error'); return; }
   const player = $('youtubePlayer');
-  player.innerHTML = '<div class="yt-wrap"><iframe src="https://www.youtube.com/embed/' + encodeURIComponent(videoId) + '?autoplay=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>';
+  player.innerHTML = '<div class="yt-wrap"><iframe src="https://www.youtube.com/embed/' +
+    encodeURIComponent(videoId) +
+    '?autoplay=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>';
   showPage('youtube');
   toast('Reproduzindo no YouTube...');
 }
@@ -1672,7 +1688,7 @@ async function fetchYtMeta(videoId) {
     if (!res.ok) throw new Error('oEmbed ' + res.status);
     const data = await res.json();
     return { title: data.title || ('Vídeo ' + videoId), author: data.author_name || 'YouTube' };
-  } catch (e) {
+  } catch {
     return { title: 'Vídeo do YouTube (' + videoId + ')', author: 'YouTube' };
   }
 }
@@ -1686,7 +1702,7 @@ async function saveYtVideo() {
   if (state.ytVideos.some(v => v.videoId === videoId)) { toast('Vídeo já salvo.', 'error'); return; }
   const cat = $('youtubeCategory').value;
   const meta = await fetchYtMeta(videoId);
-  
+
   if (isLocalMode) {
     const video = { id: uid('yt'), videoId, title: meta.title, author: meta.author, category: cat, addedAt: Date.now() };
     state.ytVideos.unshift(video);
@@ -1696,10 +1712,7 @@ async function saveYtVideo() {
     return;
   }
 
-  const video = {
-    id: uid('yt'), videoId, title: meta.title,
-    author: meta.author, category: cat, addedAt: Date.now()
-  };
+  const video = { id: uid('yt'), videoId, title: meta.title, author: meta.author, category: cat, addedAt: Date.now() };
   const { error } = await sb.from('yt_videos').insert({
     id: video.id, user_id: state.session.user.id, video_id: videoId,
     title: video.title, author: video.author, category: cat,
@@ -1718,345 +1731,265 @@ async function saveYtVideo() {
    ============================================================ */
 async function renderMembers() {
   if (state.profile?.role !== 'admin') return;
+  const grid = $('membersGrid');
+  const countEl = $('membersCount');
+  if (!grid) return;
   $('adminPanelView').classList.remove('hidden');
 
+  let members = [];
   if (isLocalMode) {
-    let members = loadJSON(LS_KEYS.demoMembers, []);
-    if (!members.find(m => m.email === 'admin@daplay.com')) {
-      members.unshift({ id: 'admin-1', name: 'Administrador', email: 'admin@daplay.com', role: 'admin', approved: true });
-      saveJSON(LS_KEYS.demoMembers, members);
+    const local = loadJSON(LS_KEYS.demoMembers, []);
+    members = [
+      { id: 'admin-1', name: 'Administrador', email: 'admin@daplay.com', role: 'admin', approved: true },
+      ...local
+    ];
+  } else {
+    const { data, error } = await sb.from('profiles').select('*').order('created_at', { ascending: true });
+    if (error) {
+      grid.innerHTML = '<div class="empty"><p>Erro ao carregar membros</p><span>' + esc(error.message) + '</span></div>';
+      return;
     }
-    
-    $('membersCount').textContent = members.length + ' membros (Modo Demo)';
-    const grid = $('membersGrid'); grid.innerHTML = '';
-    members.forEach(p => {
-      const card = document.createElement('div');
-      card.className = 'member-card';
-      const isMe = p.id === state.session.user.id;
-      card.innerHTML = `
-        <div class="member-avatar">${esc(p.name.charAt(0).toUpperCase())}</div>
-        <div class="member-info">
-          <div class="member-name">${esc(p.name)}</div>
-          <div class="member-email">${esc(p.email)}</div>
-          <div class="member-role">${esc(p.role)} · ${p.approved ? 'aprovado' : 'pendente'}</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:4px">
-          ${!p.approved ? `<button class="btn btn-primary btn-sm" data-approve="${p.id}">Aprovar</button>` : ''}
-          ${p.role === 'member' && p.approved ? `<button class="btn btn-ghost btn-sm" data-revoke="${p.id}">Revogar</button>` : ''}
-        </div>`;
-      grid.appendChild(card);
-    });
-    grid.querySelectorAll('[data-approve]').forEach(b => b.onclick = () => {
-      const list = loadJSON(LS_KEYS.demoMembers, []);
-      const m = list.find(x => x.id === b.dataset.approve);
-      if (m) { m.approved = true; saveJSON(LS_KEYS.demoMembers, list); renderMembers(); updateStats(); }
-    });
-    grid.querySelectorAll('[data-revoke]').forEach(b => b.onclick = () => {
-      const list = loadJSON(LS_KEYS.demoMembers, []);
-      const m = list.find(x => x.id === b.dataset.revoke);
-      if (m) { m.approved = false; saveJSON(LS_KEYS.demoMembers, list); renderMembers(); updateStats(); }
-    });
-    return;
+    members = data || [];
   }
 
-  const { data, error } = await sb.from('profiles').select('*')
-    .order('created_at', { ascending: false });
-  if (error) { toast('Erro: ' + error.message, 'error'); return; }
-
-  $('membersCount').textContent = `${data.length} membro${data.length !== 1 ? 's' : ''} cadastrado${data.length !== 1 ? 's' : ''}`;
-
-  const grid = $('membersGrid'); grid.innerHTML = '';
-  data.forEach(p => {
-    const initial = (p.name || '?').charAt(0).toUpperCase();
+  countEl.textContent = members.length + ' membro' + (members.length !== 1 ? 's' : '');
+  grid.innerHTML = '';
+  if (!members.length) {
+    grid.innerHTML = '<div class="empty"><p>Nenhum membro</p><span>Crie um novo membro acima.</span></div>';
+    return;
+  }
+  const frag = document.createDocumentFragment();
+  members.forEach(m => {
     const card = document.createElement('div');
     card.className = 'member-card';
-    const isMe = p.id === state.session.user.id;
-    card.innerHTML = `
-      <div class="member-avatar">${esc(initial)}</div>
-      <div class="member-info">
-        <div class="member-name">${esc(p.name)}</div>
-        <div class="member-email">${esc(p.email || '—')}</div>
-        <div class="member-role">${esc(p.role)} · ${p.approved ? 'aprovado' : 'pendente'}</div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:4px">
-        ${!p.approved ? `<button class="btn btn-primary btn-sm" data-approve="${p.id}">Aprovar</button>` : ''}
-        ${p.approved && !isMe ? `<button class="btn btn-ghost btn-sm" data-revoke="${p.id}">Revogar</button>` : ''}
-        ${p.role === 'member' ? `<button class="btn btn-ghost btn-sm" data-promote="${p.id}">Tornar admin</button>` : ''}
-        ${p.role === 'admin' && !isMe ? `<button class="btn btn-ghost btn-sm" data-demote="${p.id}">Remover admin</button>` : ''}
-      </div>`;
-    grid.appendChild(card);
+    const initial = (m.name || 'U').trim().charAt(0).toUpperCase() || '?';
+    const role = m.role || 'member';
+    const pending = m.approved ? '' : ' · pendente';
+    card.innerHTML =
+      '<div class="member-avatar">' + esc(initial) + '</div>' +
+      '<div class="member-info">' +
+        '<div class="member-name">' + esc(m.name || 'Sem nome') + '</div>' +
+        '<div class="member-email">' + esc(m.email || '—') + '</div>' +
+        '<div class="member-role">' + esc(role) + esc(pending) + '</div>' +
+      '</div>';
+    frag.appendChild(card);
   });
-
-  grid.querySelectorAll('[data-approve]').forEach(b => b.onclick = () => updateProfile(b.dataset.approve, { approved: true }));
-  grid.querySelectorAll('[data-revoke]').forEach(b => b.onclick = () => updateProfile(b.dataset.revoke, { approved: false }));
-  grid.querySelectorAll('[data-promote]').forEach(b => b.onclick = () => updateProfile(b.dataset.promote, { role: 'admin', approved: true }));
-  grid.querySelectorAll('[data-demote]').forEach(b => b.onclick = () => updateProfile(b.dataset.demote, { role: 'member' }));
+  grid.appendChild(frag);
 }
 
-async function updateProfile(id, patch) {
-  const { error } = await sb.from('profiles').update(patch).eq('id', id);
-  if (error) { toast('Erro: ' + error.message, 'error'); return; }
-  toast('Membro atualizado.', 'success');
-  renderMembers();
+async function createMember() {
+  if (state.profile?.role !== 'admin') { toast('Apenas administradores.', 'error'); return; }
+  const name = $('newMemberName').value.trim();
+  const email = $('newMemberEmail').value.trim().toLowerCase();
+  const password = $('newMemberPassword').value;
+
+  if (!name || !email || !password) { toast('Preencha todos os campos.', 'error'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toast('E-mail inválido.', 'error'); return; }
+  if (password.length < 6) { toast('Senha mínima de 6 caracteres.', 'error'); return; }
+
+  if (isLocalMode) {
+    const members = loadJSON(LS_KEYS.demoMembers, []);
+    if (members.some(m => m.email === email)) { toast('E-mail já cadastrado.', 'error'); return; }
+    members.push({ id: uid('member'), name, email, password, role: 'member', approved: true });
+    saveJSON(LS_KEYS.demoMembers, members);
+    $('newMemberName').value = '';
+    $('newMemberEmail').value = '';
+    $('newMemberPassword').value = '';
+    renderMembers();
+    updateStats();
+    toast('Membro criado.', 'success');
+    return;
+  }
+
+  // Em produção, a criação de usuário exige admin API / Edge Function
+  toast('Criação de usuário requer backend administrativo (Edge Function).', 'error');
 }
 
 /* ============================================================
-   BÍBLIA
+   APK
    ============================================================ */
-const BIBLE_URL = 'https://raw.githubusercontent.com/thiagobodruk/bible/master/json/aa.json';
-
-async function renderBible() {
-  const installView = $('bibleInstallView');
-  const readView = $('bibleReadView');
-
-  let cached = await idbGet('meta', 'bibleData').catch(() => null);
-  if (!cached) {
-    // Fallback para versões antigas que usavam localStorage
-    const rawLS = localStorage.getItem('daplay.bible.data.v1');
-    if (rawLS) {
-      try {
-        cached = JSON.parse(rawLS);
-        await idbPut('meta', 'bibleData', cached);
-        localStorage.removeItem('daplay.bible.data.v1');
-      } catch(e) {}
-    }
+function loadApkLink() {
+  const url = localStorage.getItem(LS_KEYS.apkLink);
+  const btn = $('downloadApkBtn');
+  if (url) {
+    $('apkLinkInput').value = url;
+    btn.href = url;
+    btn.style.opacity = '';
+    btn.style.pointerEvents = '';
+  } else {
+    btn.style.opacity = '.5';
+    btn.style.pointerEvents = 'none';
   }
-
-  if (!cached) {
-    installView.classList.remove('hidden');
-    readView.classList.add('hidden');
-    return;
+}
+function saveApkLink() {
+  const url = $('apkLinkInput').value.trim();
+  if (!url) { toast('Cole um link válido.', 'error'); return; }
+  if (!/^https?:\/\//i.test(url)) { toast('Link deve começar com http:// ou https://', 'error'); return; }
+  localStorage.setItem(LS_KEYS.apkLink, url);
+  loadApkLink();
+  toast('Link salvo.', 'success');
+}
+async function shareApk() {
+  const url = localStorage.getItem(LS_KEYS.apkLink) || $('apkLinkInput').value.trim();
+  if (!url) { toast('Nenhum link salvo.', 'error'); return; }
+  if (navigator.share) {
+    try { await navigator.share({ title: 'Daplay APK', text: 'Baixe o Daplay:', url }); return; }
+    catch {}
   }
-  installView.classList.add('hidden');
-  readView.classList.remove('hidden');
-  state.bibleData = cached;
-
-  const bookSelect = $('bibleBookSelect');
-  if (bookSelect.options.length === 0) {
-    cached.forEach((book, i) => {
-      const opt = document.createElement('option');
-      opt.value = i;
-      opt.textContent = book.name || book.abbrev || ('Livro ' + (i+1));
-      bookSelect.appendChild(opt);
-    });
-  }
-  populateChapters();
-  showChapter();
-}
-
-function populateChapters() {
-  const bookIdx = parseInt($('bibleBookSelect').value || 0, 10);
-  const book = state.bibleData[bookIdx];
-  const chSelect = $('bibleChapterSelect');
-  chSelect.innerHTML = '';
-  if (!book?.chapters) return;
-  book.chapters.forEach((_, i) => {
-    const opt = document.createElement('option');
-    opt.value = i;
-    opt.textContent = 'Capítulo ' + (i+1);
-    chSelect.appendChild(opt);
-  });
-}
-
-function showChapter() {
-  const bookIdx = parseInt($('bibleBookSelect').value || 0, 10);
-  const chapIdx = parseInt($('bibleChapterSelect').value || 0, 10);
-  const book = state.bibleData?.[bookIdx];
-  const verses = book?.chapters?.[chapIdx] || [];
-  const container = $('bibleText');
-  container.innerHTML = verses.map((v, i) =>
-    '<span class="verse"><span class="verse-num">' + (i+1) + '</span>' + esc(v) + '</span>'
-  ).join('') || '<em style="color:var(--muted)">Capítulo vazio.</em>';
-}
-
-async function installBible() {
-  const btn = $('bibleInstallBtn');
-  btn.disabled = true; btn.textContent = 'Baixando...';
   try {
-    const res = await fetch(BIBLE_URL);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    
-    // Salva no IndexedDB (suporta arquivos grandes)
-    await idbPut('meta', 'bibleData', data);
-    
-    toast('Bíblia instalada com sucesso!', 'success');
-    renderBible();
-  } catch (e) {
-    console.error('Erro Bíblia:', e);
-    toast('Erro ao baixar Bíblia: ' + (e.message || 'Verifique a conexão ou se o link está ativo.'), 'error');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Instalar Bíblia';
-  }
-}
-
-function speakChapter() {
-  const btn = $('bibleAudioBtn');
-  if (!('speechSynthesis' in window)) { toast('TTS não suportado.', 'error'); return; }
-
-  if (btn.classList.contains('playing')) {
-    speechSynthesis.cancel();
-    btn.classList.remove('playing');
-    btn.innerHTML = ICONS.play + ' Ouvir Capítulo';
-    return;
-  }
-
-  const text = $('bibleText').innerText;
-  if (!text) return;
-
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'pt-BR';
-  u.rate = parseFloat($('bibleSpeedSelect').value) || 1.0;
-  u.onend = () => { btn.classList.remove('playing'); btn.innerHTML = ICONS.play + ' Ouvir Capítulo'; };
-  u.onerror = () => { btn.classList.remove('playing'); btn.innerHTML = ICONS.play + ' Ouvir Capítulo'; };
-  speechSynthesis.cancel();
-  speechSynthesis.speak(u);
-  btn.classList.add('playing');
-  btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><rect x="6" y="4" width="4" height="16" rx="1.2"/><rect x="14" y="4" width="4" height="16" rx="1.2"/></svg> Parar';
+    await navigator.clipboard.writeText(url);
+    toast('Link copiado!', 'success');
+  } catch { toast(url, 'info'); }
 }
 
 /* ============================================================
-   TEMA
+   EVENT BINDINGS
    ============================================================ */
-function applyTheme(theme) {
-  document.documentElement.dataset.theme = theme;
-  saveJSON(LS_KEYS.theme, theme);
-  const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.content = theme === 'light' ? '#f5f6fa' : '#08090f';
-}
-
-/* ============================================================
-   INIT — listeners
-   ============================================================ */
-function initListeners() {
-  // Nav
-  document.querySelectorAll('[data-nav]').forEach(b => {
-    b.addEventListener('click', () => showPage(b.dataset.nav));
-  });
-  // Tabs
-  document.querySelectorAll('.tab-btn').forEach(b => {
-    b.addEventListener('click', () => handleTabClick(b.dataset.tab));
-  });
-  // YT chips
-  document.querySelectorAll('.yt-filter-chip').forEach(c => {
-    c.addEventListener('click', () => { ytFilter = c.dataset.cat; renderYtVideos(); });
-  });
-  // Theme
-  $('themeToggle').onclick = () => {
-    applyTheme(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light');
-  };
-  // Logout
-  $('logoutBtn').onclick = doLogout;
-  $('authLogoutBtn').onclick = doLogout;
+function bindEvents() {
   // Auth
-  $('authLoginBtn').onclick = doLogin;
-  $('authSignupBtn').onclick = doSignup;
-  $('authGoSignup').onclick = () => { clearAuthErrors(); showAuthView('authSignupView'); };
-  $('authGoLogin').onclick = () => { clearAuthErrors(); showAuthView('authLoginView'); };
+  $('authLoginBtn').addEventListener('click', doLogin);
   $('authPassword').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-  $('signupPassword').addEventListener('keydown', e => { if (e.key === 'Enter') doSignup(); });
+  $('authEmail').addEventListener('keydown', e => { if (e.key === 'Enter') $('authPassword').focus(); });
+  $('authLogoutBtn').addEventListener('click', doLogout);
+  $('logoutBtn').addEventListener('click', doLogout);
 
-  // Import
-  $('importTopBtn').onclick = () => $('fileInput').click();
-  $('fileInput').onchange = (e) => { importFiles(e.target.files); e.target.value = ''; };
-  const dz = $('dropzone');
-  dz.onclick = () => $('fileInput').click();
-  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag'); });
-  dz.addEventListener('dragleave', () => dz.classList.remove('drag'));
-  dz.addEventListener('drop', e => {
-    e.preventDefault(); dz.classList.remove('drag');
-    importFiles(e.dataTransfer.files);
+  // Navegação (sidebar + botões "Ver todas")
+  document.querySelectorAll('[data-nav]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.nav === 'youtube') state.ytFilter = 'all';
+      showPage(btn.dataset.nav);
+    });
+  });
+
+  // Tabs superiores
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => handleTabClick(btn.dataset.tab));
+  });
+
+  // Importar
+  $('importTopBtn').addEventListener('click', () => {
+    showPage('home');
+    setTimeout(() => $('dropzone').scrollIntoView({ behavior: 'smooth', block: 'center' }), 150);
+  });
+
+  // Dropzone
+  const dropzone = $('dropzone');
+  const fileInput = $('fileInput');
+  dropzone.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files.length) importFiles(e.target.files);
+    fileInput.value = '';
+  });
+  ['dragenter','dragover'].forEach(ev => dropzone.addEventListener(ev, (e) => {
+    e.preventDefault(); dropzone.classList.add('drag');
+  }));
+  ['dragleave','drop'].forEach(ev => dropzone.addEventListener(ev, (e) => {
+    e.preventDefault(); dropzone.classList.remove('drag');
+  }));
+  dropzone.addEventListener('drop', (e) => {
+    if (e.dataTransfer.files && e.dataTransfer.files.length) importFiles(e.dataTransfer.files);
   });
 
   // Play all
-  $('playAllRecentBtn').onclick = () => {
-    if (!state.songs.length) return toast('Nada para tocar.', 'error');
-    playSong(state.songs[0].id, state.songs.map(s => s.id));
-  };
-  $('playAllFavsBtn').onclick = () => {
-    const favs = state.favorites.map(id => getSong(id)).filter(Boolean);
-    if (!favs.length) return toast('Sem favoritas.', 'error');
-    playSong(favs[0].id, favs.map(s => s.id));
-  };
+  $('playAllRecentBtn').addEventListener('click', () => {
+    if (!state.songs.length) { toast('Nenhuma música.', 'error'); return; }
+    const sorted = state.songs.slice().sort((a, b) => (b.addedAt || 0) - (a.addedAt || 0));
+    playSong(sorted[0].id, sorted.map(s => s.id));
+  });
+  $('playAllFavsBtn').addEventListener('click', () => {
+    if (!state.favorites.length) { toast('Nenhuma favorita.', 'error'); return; }
+    playSong(state.favorites[0], state.favorites.slice());
+  });
 
-  // Library filters
-  $('searchInput').addEventListener('input', debounce(renderLibrary, 250));
-  $('sortSelect').onchange = renderLibrary;
+  // Busca e ordenação
+  $('searchInput').addEventListener('input', debounce(renderLibrary, 200));
+  $('sortSelect').addEventListener('change', renderLibrary);
 
   // YouTube
-  $('playYoutubeBtn').onclick = () => {
-    const id = extractYtId($('youtubeInput').value.trim());
-    if (!id) return toast('Link inválido.', 'error');
+  $('saveYoutubeBtn').addEventListener('click', saveYtVideo);
+  $('playYoutubeBtn').addEventListener('click', () => {
+    const url = $('youtubeInput').value.trim();
+    const id = extractYtId(url);
+    if (!id) { toast('Link inválido.', 'error'); return; }
     playYtSaved(id);
-  };
-  $('saveYoutubeBtn').onclick = saveYtVideo;
+  });
+  $('youtubeInput').addEventListener('keydown', e => { if (e.key === 'Enter') saveYtVideo(); });
 
-  // Player
-  $('playBtn').onclick = togglePlayPause;
-  $('mobilePlayBtn').onclick = togglePlayPause;
-  $('prevBtn').onclick = prevTrack;
-  $('mobilePrevBtn').onclick = prevTrack;
-  $('nextBtn').onclick = () => nextTrack(false);
-  $('mobileNextBtn').onclick = () => nextTrack(false);
-  $('shuffleBtn').onclick = () => { state.shuffle = !state.shuffle; renderPlayer(); };
-  $('mobileShuffleBtn').onclick = () => { state.shuffle = !state.shuffle; renderPlayer(); };
-  const cycleRepeat = () => {
-    state.repeat = state.repeat === 'off' ? 'all' : state.repeat === 'all' ? 'one' : 'off';
-    renderPlayer();
-  };
-  $('repeatBtn').onclick = cycleRepeat;
-  $('mobileRepeatBtn').onclick = cycleRepeat;
-  $('progressBar').oninput = (e) => {
-    const dur = isFinite(audio.duration) ? audio.duration : 0;
-    if (dur > 0) audio.currentTime = (e.target.value / 100) * dur;
-  };
-  $('volumeBar').oninput = (e) => {
-    audio.volume = e.target.value / 100;
-    audio.muted = audio.volume === 0;
+  // Filtros do YouTube
+  $('ytFilterRow').addEventListener('click', (e) => {
+    const chip = e.target.closest('[data-cat]');
+    if (!chip) return;
+    state.ytFilter = chip.dataset.cat;
+    renderYtVideos();
+  });
+
+  // Tema
+  $('themeToggle').addEventListener('click', toggleTheme);
+
+  // Player - controles
+  $('playBtn').addEventListener('click', togglePlayPause);
+  $('mobilePlayBtn').addEventListener('click', togglePlayPause);
+  $('prevBtn').addEventListener('click', prevTrack);
+  $('mobilePrevBtn').addEventListener('click', prevTrack);
+  $('nextBtn').addEventListener('click', () => nextTrack(false));
+  $('mobileNextBtn').addEventListener('click', () => nextTrack(false));
+  $('shuffleBtn').addEventListener('click', toggleShuffle);
+  $('mobileShuffleBtn').addEventListener('click', toggleShuffle);
+  $('repeatBtn').addEventListener('click', cycleRepeat);
+  $('mobileRepeatBtn').addEventListener('click', cycleRepeat);
+  $('muteBtn').addEventListener('click', toggleMute);
+
+  // Volume
+  $('volumeBar').addEventListener('input', (e) => {
+    audio.volume = Number(e.target.value) / 100;
+    audio.muted = false;
     updateVolumeUI();
-  };
-  $('muteBtn').onclick = () => { audio.muted = !audio.muted; updateVolumeUI(); };
+  });
 
-  // Bible
-  $('bibleInstallBtn').onclick = installBible;
-  $('bibleReinstallBtn').onclick = installBible;
-  $('bibleBookSelect').onchange = () => { populateChapters(); showChapter(); };
-  $('bibleChapterSelect').onchange = showChapter;
-  $('bibleAudioBtn').onclick = speakChapter;
-  $('bibleSpeedSelect').onchange = () => {
-    if ($('bibleAudioBtn').classList.contains('playing')) {
-      speechSynthesis.cancel();
-      $('bibleAudioBtn').classList.remove('playing');
-      $('bibleAudioBtn').innerHTML = ICONS.play + ' Ouvir Capítulo';
-    }
-  };
+  // Progress
+  $('progressBar').addEventListener('input', (e) => {
+    const dur = audio.duration || 0;
+    if (!dur) return;
+    audio.currentTime = (Number(e.target.value) / 100) * dur;
+  });
 
-  // Auth state sync (outra aba)
-  if (!isLocalMode) {
-    sb.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT') {
-        state.session = null; state.profile = null;
-        showAuthView('authLoginView');
-        $('accessScreen').classList.remove('hidden');
-      }
-    });
-  }
+  // Admin - APK
+  $('saveApkLinkBtn').addEventListener('click', saveApkLink);
+  $('shareApkBtn').addEventListener('click', shareApk);
+
+  // Admin - criar membro
+  $('createMemberBtn').addEventListener('click', createMember);
+
+  // Modal backdrop
+  $('modal').addEventListener('click', (e) => {
+    if (e.target.id === 'modal') $('modal').classList.add('hidden');
+  });
+
+  // Atalhos de teclado
+  document.addEventListener('keydown', (e) => {
+    if (e.target.matches('input, textarea, select')) return;
+    if ($('accessScreen').classList.contains('hidden') === false) return;
+    if (e.code === 'Space') { e.preventDefault(); togglePlayPause(); }
+    if (e.code === 'ArrowRight' && e.shiftKey) { e.preventDefault(); nextTrack(false); }
+    if (e.code === 'ArrowLeft' && e.shiftKey) { e.preventDefault(); prevTrack(); }
+  });
 }
 
 /* ============================================================
-   BOOT
+   INIT
    ============================================================ */
-(function boot() {
-  applyTheme(loadJSON(LS_KEYS.theme, 'dark'));
-  initListeners();
-  updateVolumeUI();
-  bootstrapAuth().catch(err => {
-    console.error('Bootstrap:', err);
-    showAuthView('authLoginView');
-    showAuthError('authError', 'Erro ao iniciar: ' + (err?.message || err));
-  });
-})();
+async function init() {
+  initTheme();
+  bindEvents();
+  loadApkLink();
+  await bootstrapAuth();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
 </script>
 </body>
 </html>
