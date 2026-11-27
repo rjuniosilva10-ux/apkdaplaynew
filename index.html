@@ -2,648 +2,1541 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="Dauplay — Sua Música, Sua Fé. Player, Bíblia offline com voz e YouTube.">
+<meta name="theme-color" content="#0a0a0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Dauplay">
+<meta name="mobile-web-app-capable" content="yes">
 <title>Dauplay — Sua Música, Sua Fé.</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎵%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-    /* ===== SPLASH SCREEN ===== */
-    #splashScreen {
-        position: fixed; inset: 0; background: #0a0a0f;
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
-        z-index: 99999; transition: opacity 0.6s ease;
-    }
-    #splashScreen.fade-out { opacity: 0; pointer-events: none; }
-    .splash-content { animation: pulseLogo 2s infinite alternate; display: flex; align-items: center; justify-content: center; }
-    .splash-img, #splashSvg {
-        width: 180px; height: 180px; border-radius: 40px;
-        box-shadow: 0 10px 40px rgba(29,185,84,0.4);
-        object-fit: cover;
-    }
-    @keyframes pulseLogo { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
-    .splash-loader {
-        margin-top: 40px; width: 120px; height: 4px;
-        background: rgba(255,255,255,0.1); border-radius: 2px;
-        overflow: hidden; position: relative;
-    }
-    .splash-bar {
-        position: absolute; left: -50%; width: 50%; height: 100%;
-        background: linear-gradient(135deg, #1db954, #00d4ff); border-radius: 2px;
-        animation: loadBar 1s infinite linear;
-    }
-    @keyframes loadBar { 0% { left: -50%; } 100% { left: 100%; } }
+/* ============================================================
+   DAUPLAY — REVOLUTION EDITION
+   Aurora · Glass · 3D · Real Audio Visualization
+============================================================ */
 
-    /* ===== RESET & BASE ===== */
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    
-    :root {
-        --bg-base: #0a0a0f;
-        --bg-glass: rgba(15, 15, 20, 0.7);
-        --bg-card: rgba(255, 255, 255, 0.035);
-        --bg-card-hover: rgba(255, 255, 255, 0.07);
-        --border-glass: rgba(255, 255, 255, 0.06);
-        --border-light: rgba(255, 255, 255, 0.1);
-        --text-main: #ffffff;
-        --text-muted: #b3b3b3;
-        --accent: #1db954;
-        --accent-2: #00d4ff;
-        --accent-glow: rgba(29, 185, 84, 0.35);
-        --gradient-1: linear-gradient(135deg, #1db954, #00d4ff);
-        --shadow-card: 0 20px 40px -15px rgba(0, 0, 0, 0.8);
-        --shadow-glow: 0 0 30px -10px rgba(29, 185, 84, 0.4);
-        --player-height: 90px;
-        --radius: 16px;
-        --radius-sm: 12px;
-    }
-    
-    body {
-        font-family: 'Inter', sans-serif;
-        background-color: var(--bg-base);
-        background-image: 
-            radial-gradient(circle at 10% 20%, rgba(29,185,84,0.08) 0%, transparent 40%),
-            radial-gradient(circle at 90% 80%, rgba(0,212,255,0.08) 0%, transparent 40%),
-            radial-gradient(circle at 50% 50%, rgba(127,0,255,0.05) 0%, transparent 60%);
-        color: var(--text-main);
-        height: 100vh;
-        display: flex;
-        overflow: hidden;
-        -webkit-font-smoothing: antialiased;
-    }
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 
-    /* ===== SIDEBAR ===== */
-    .sidebar {
-        width: 260px; background: var(--bg-glass);
-        backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
-        border-right: 1px solid var(--border-glass);
-        display: flex; flex-direction: column; padding: 24px 16px; z-index: 100;
-        transition: all 0.3s ease;
-    }
-    .logo { font-size: 24px; font-weight: 700; letter-spacing: -1px; margin-bottom: 32px; padding-left: 12px; }
-    .logo span { background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .nav-menu { display: flex; flex-direction: column; gap: 6px; flex: 1; }
-    .nav-item {
-        display: flex; align-items: center; gap: 14px;
-        padding: 12px 16px; border-radius: var(--radius-sm);
-        cursor: pointer; color: var(--text-muted);
-        font-weight: 500; font-size: 14px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-    }
-    .nav-item:hover { color: var(--text-main); background: var(--bg-card-hover); transform: translateX(4px); }
-    .nav-item.active { color: var(--text-main); background: rgba(255,255,255,0.08); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05); }
-    .nav-item.active::before {
-        content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
-        width: 3px; height: 20px; background: var(--gradient-1); border-radius: 0 3px 3px 0;
-    }
-    .nav-item svg { width: 20px; height: 20px; fill: currentColor; transition: all 0.3s; }
-    .nav-item.active svg { color: var(--accent); }
-    .theme-btn {
-        margin-top: auto; display: flex; align-items: center; justify-content: center;
-        gap: 8px; padding: 12px; border-radius: var(--radius-sm);
-        background: var(--bg-card); border: 1px solid var(--border-glass);
-        color: var(--text-main); cursor: pointer; font-weight: 600; font-size: 13px;
-        transition: all 0.3s;
-    }
-    .theme-btn:hover { background: var(--bg-card-hover); border-color: var(--border-light); }
+:root{
+    --bg-base:#06060a;
+    --bg-elev:#0c0c14;
+    --bg-glass:rgba(15,15,22,.65);
+    --bg-glass-strong:rgba(18,18,26,.85);
+    --bg-card:rgba(255,255,255,.03);
+    --bg-card-hover:rgba(255,255,255,.06);
+    --border-glass:rgba(255,255,255,.07);
+    --border-light:rgba(255,255,255,.12);
+    --text-main:#fff;
+    --text-muted:#8a8a99;
+    --text-dim:#5a5a6b;
 
-    /* ===== MAIN ===== */
-    .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-    .header {
-        padding: 28px 36px 16px;
-        display: flex; justify-content: space-between; align-items: center;
-        z-index: 10;
-    }
-    .header h1 {
-        font-size: 28px; font-weight: 700; letter-spacing: -0.5px;
-        background: linear-gradient(to right, #fff, #aaa);
-        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        animation: fadeIn 0.5s ease;
-    }
-    .theme-btn-mobile {
-        display: none;
-        width: 40px; height: 40px; border-radius: 50%;
-        background: var(--bg-card); border: 1px solid var(--border-glass);
-        color: var(--text-main); cursor: pointer;
-        align-items: center; justify-content: center;
-        font-size: 18px; transition: all 0.3s;
-    }
-    .theme-btn-mobile:hover { background: var(--bg-card-hover); }
-    .view-container { flex: 1; overflow-y: auto; padding: 0 36px calc(var(--player-height) + 40px); }
-    .view-section { display: none; }
-    .view-section.active { display: block; animation: fadeIn 0.4s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    /* Dynamic — alterado via JS conforme a capa da música */
+    --dyn: 29,185,84;
+    --dyn-2: 0,212,255;
+    --accent:rgb(var(--dyn));
+    --accent-2:rgb(var(--dyn-2));
+    --accent-glow:rgba(var(--dyn),.4);
+    --gradient-1:linear-gradient(135deg, rgb(var(--dyn)), rgb(var(--dyn-2)));
 
-    /* ===== MÚSICAS ===== */
-    .music-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 18px; }
-    .music-card {
-        background: var(--bg-card); border: 1px solid var(--border-glass);
-        border-radius: var(--radius); padding: 12px; cursor: pointer;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative; overflow: hidden;
-    }
-    .music-card:hover {
-        background: var(--bg-card-hover);
-        transform: translateY(-8px) scale(1.02);
-        box-shadow: var(--shadow-card), var(--shadow-glow);
-        border-color: rgba(29,185,84,0.3);
-    }
-    .music-card.active { border-color: var(--accent); box-shadow: 0 0 25px var(--accent-glow); }
-    .card-img-wrapper {
-        width: 100%; aspect-ratio: 1; border-radius: 10px;
-        overflow: hidden; margin-bottom: 12px;
-        position: relative; background: #222;
-    }
-    .card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
-    .music-card:hover .card-img-wrapper img { transform: scale(1.08); }
-    .card-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
-    .card-artist { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    --shadow-card:0 24px 48px -16px rgba(0,0,0,.9);
+    --shadow-glow:0 0 40px -8px rgba(var(--dyn),.45);
 
-    .fav-btn {
-        position: absolute; top: 18px; right: 18px; width: 28px; height: 28px; border-radius: 50%;
-        background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.15); color: white; cursor: pointer;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 12px; transition: all 0.3s; z-index: 5; padding: 0; opacity: 0.85;
-    }
-    .music-card:hover .fav-btn { opacity: 1; transform: scale(1.15); }
-    .fav-btn.active { background: rgba(29,185,84,0.95); border-color: var(--accent); }
+    --player-height:88px;
+    --radius:20px;
+    --radius-sm:14px;
+    --radius-lg:28px;
 
-    .del-btn {
-        position: absolute; top: 18px; left: 18px; width: 28px; height: 28px; border-radius: 50%;
-        background: rgba(220, 53, 69, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.15); color: white; cursor: pointer;
-        display: flex; align-items: center; justify-content: center;
-        transition: all 0.3s; z-index: 5; padding: 0; opacity: 0.85;
-    }
-    .music-card:hover .del-btn { opacity: 1; transform: scale(1.15); }
-    .del-btn:hover { background: rgba(220, 53, 69, 1); }
-    .del-btn svg { width: 14px; height: 14px; fill: white; }
+    --ease-spring:cubic-bezier(.34,1.56,.64,1);
+    --ease-smooth:cubic-bezier(.4,0,.2,1);
 
-    /* ===== BÍBLIA ===== */
-    .bible-layout { display: flex; gap: 32px; height: calc(100vh - 200px); }
-    .bible-sidebar {
-        width: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;
-        padding-right: 16px; border-right: 1px solid var(--border-glass);
-    }
-    .bible-book-btn {
-        padding: 10px 14px; background: transparent; border: none; color: var(--text-muted);
-        text-align: left; font-size: 13px; border-radius: 8px; cursor: pointer;
-        transition: all 0.3s;
-    }
-    .bible-book-btn:hover, .bible-book-btn.active { background: var(--bg-card-hover); color: var(--text-main); }
-    .bible-book-btn.active { font-weight: 600; border-left: 3px solid var(--accent); }
-    .bible-reader { flex: 1; overflow-y: auto; padding-right: 16px; }
-    .chapter-selector { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
-    .chapter-btn {
-        width: 38px; height: 38px; border-radius: 50%;
-        background: var(--bg-card); border: 1px solid var(--border-glass);
-        color: var(--text-main); cursor: pointer; font-size: 13px; transition: all 0.3s;
-    }
-    .chapter-btn:hover { background: var(--bg-card-hover); border-color: var(--border-light); }
-    .chapter-btn.active { background: var(--gradient-1); color: #000; font-weight: bold; border-color: transparent; box-shadow: 0 0 15px var(--accent-glow); }
-    .bible-text-content { font-family: 'Playfair Display', serif; font-size: 17px; line-height: 1.9; color: #e0e0e0; }
-    .bible-text-content p { margin-bottom: 22px; }
-    .verse-num { font-family: 'Inter', sans-serif; font-size: 11px; color: var(--accent); font-weight: 700; vertical-align: super; margin-right: 6px; }
+    --sidebar-w:248px;
+}
 
-    .tts-bar { margin-bottom: 24px; display: flex; gap: 8px; flex-wrap: wrap; }
-    .tts-btn {
-        padding: 10px 20px; background: var(--bg-card); border: 1px solid var(--border-glass);
-        color: var(--text-main); border-radius: 10px; font-size: 13px; font-weight: 600;
-        cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px;
-    }
-    .tts-btn:hover { background: var(--bg-card-hover); border-color: var(--accent); }
-    .tts-btn.playing { background: var(--gradient-1); color: #000; border-color: transparent; box-shadow: 0 0 20px var(--accent-glow); }
+body.light-mode{
+    --bg-base:#f4f5f9;
+    --bg-elev:#fff;
+    --bg-glass:rgba(255,255,255,.75);
+    --bg-glass-strong:rgba(255,255,255,.92);
+    --bg-card:rgba(0,0,0,.03);
+    --bg-card-hover:rgba(0,0,0,.06);
+    --border-glass:rgba(0,0,0,.07);
+    --border-light:rgba(0,0,0,.12);
+    --text-main:#0a0a15;
+    --text-muted:#5a5a6b;
+    --text-dim:#9090a0;
+    --shadow-card:0 24px 48px -16px rgba(30,30,60,.15);
+}
 
-    .bible-download-card {
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
-        height: 100%; min-height: 400px; text-align: center; padding: 40px;
-        background: var(--bg-card); border: 1px dashed var(--border-glass); border-radius: var(--radius); gap: 16px;
-    }
-    .bible-download-card .icon { font-size: 64px; }
-    .bible-download-card h2 { font-size: 24px; font-weight: 700; }
-    .bible-download-card p { color: var(--text-muted); max-width: 400px; line-height: 1.6; }
-    .bible-download-card .btn-download {
-        padding: 16px 32px; background: var(--gradient-1); color: #000;
-        border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s; margin-top: 8px;
-    }
-    .bible-download-card .btn-download:hover { transform: scale(1.05); filter: brightness(1.1); box-shadow: 0 0 20px var(--accent-glow); }
-    .bible-download-card .btn-download:disabled { opacity: 0.6; cursor: wait; transform: none; }
-    .bible-download-card .status { font-size: 13px; color: var(--text-muted); min-height: 20px; }
-    .bible-download-card .status.error { color: #f87171; }
-    .bible-download-card .status.success { color: var(--accent); }
+html,body{height:100%}
+body{
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    background:var(--bg-base);
+    color:var(--text-main);
+    display:flex;
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    transition:background .5s var(--ease-smooth),color .3s;
+    position:relative;
+}
 
-    /* ===== YOUTUBE ===== */
-    .yt-input-wrapper { display: flex; gap: 12px; margin-bottom: 32px; }
-    .yt-input-wrapper input {
-        flex: 1; padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-glass);
-        background: var(--bg-card); color: white; font-size: 15px; outline: none; transition: all 0.3s;
-    }
-    .yt-input-wrapper input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(29,185,84,0.1); }
-    .btn-add {
-        padding: 0 24px; background: var(--gradient-1); color: #000; border: none;
-        border-radius: var(--radius-sm); font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s;
-    }
-    .btn-add:hover { filter: brightness(1.1); transform: scale(1.02); box-shadow: 0 0 20px var(--accent-glow); }
-    .yt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-    .yt-card {
-        background: var(--bg-card); border-radius: var(--radius); overflow: hidden;
-        border: 1px solid var(--border-glass); cursor: pointer; transition: all 0.4s; position: relative;
-    }
-    .yt-card:hover { transform: translateY(-6px); border-color: rgba(0,212,255,0.3); box-shadow: var(--shadow-card); }
-    .yt-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; background: #222; display: block; }
-    .yt-info { padding: 16px; }
-    .yt-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-    .yt-play-overlay {
-        position: absolute; top: 0; left: 0; right: 0; aspect-ratio: 16/9;
-        display: flex; align-items: center; justify-content: center;
-        background: rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.3s;
-    }
-    .yt-card:hover .yt-play-overlay { opacity: 1; }
-    .yt-play-overlay .play-circle {
-        width: 60px; height: 60px; border-radius: 50%;
-        background: rgba(0,0,0,0.75); display: flex; align-items: center; justify-content: center;
-        backdrop-filter: blur(10px);
-    }
-    .yt-play-overlay svg { width: 28px; height: 28px; fill: white; margin-left: 3px; }
+/* Aurora animated background */
+body::before,
+body::after{
+    content:'';
+    position:fixed;
+    inset:-20%;
+    pointer-events:none;
+    z-index:0;
+    transition:opacity .6s;
+}
+body::before{
+    background:
+        radial-gradient(ellipse at 15% 25%, rgba(var(--dyn),.22) 0%, transparent 45%),
+        radial-gradient(ellipse at 85% 75%, rgba(var(--dyn-2),.18) 0%, transparent 45%),
+        radial-gradient(ellipse at 50% 50%, rgba(140,60,255,.10) 0%, transparent 55%);
+    animation:auroraShift 24s ease-in-out infinite, auroraHue 40s linear infinite;
+    filter:blur(20px);
+}
+body::after{
+    background:
+        radial-gradient(ellipse at 80% 20%, rgba(var(--dyn-2),.10) 0%, transparent 40%),
+        radial-gradient(ellipse at 20% 80%, rgba(var(--dyn),.10) 0%, transparent 40%);
+    animation:auroraShift 30s ease-in-out infinite reverse;
+    filter:blur(40px);
+}
+body.light-mode::before{opacity:.35}
+body.light-mode::after{opacity:.25}
 
-    .yt-del-btn {
-        position: absolute; top: 12px; left: 12px; width: 32px; height: 32px; border-radius: 50%;
-        background: rgba(220, 53, 69, 0.8); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.2); color: white; cursor: pointer;
-        display: flex; align-items: center; justify-content: center;
-        transition: all 0.3s; z-index: 10; padding: 0;
-    }
-    .yt-del-btn:hover { background: rgba(220, 53, 69, 1); transform: scale(1.1); }
-    .yt-del-btn svg { width: 16px; height: 16px; fill: white; }
+@keyframes auroraShift{
+    0%,100%{transform:translate(0,0) scale(1)}
+    33%{transform:translate(3%,-2%) scale(1.08)}
+    66%{transform:translate(-2%,3%) scale(1.04)}
+}
+@keyframes auroraHue{
+    0%{filter:blur(20px) hue-rotate(0deg)}
+    100%{filter:blur(20px) hue-rotate(360deg)}
+}
 
-    .yt-modal {
-        position: fixed; inset: 0; background: rgba(0,0,0,0.92);
-        backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-        z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; animation: fadeIn 0.2s ease;
-    }
-    .yt-modal.hidden { display: none; }
-    .yt-modal-content { position: relative; width: 100%; max-width: 900px; aspect-ratio: 16/9; background: #000; border-radius: var(--radius); overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
-    .yt-modal-iframe-wrap { position: absolute; inset: 0; }
-    .yt-modal-iframe-wrap iframe { width: 100%; height: 100%; border: none; }
-    .yt-modal-close {
-        position: absolute; top: 12px; right: 12px; width: 40px; height: 40px; border-radius: 50%;
-        background: rgba(0,0,0,0.75); border: 1px solid rgba(255,255,255,0.2);
-        color: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; z-index: 10;
-        backdrop-filter: blur(10px);
-    }
-    .yt-modal-close:hover { background: rgba(255,255,255,0.2); transform: scale(1.1); }
+/* ============================================================
+   SPLASH
+============================================================ */
+#splashScreen{
+    position:fixed;inset:0;background:#06060a;z-index:99999;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    transition:opacity .7s var(--ease-smooth), transform .7s;
+}
+#splashScreen.fade-out{opacity:0;transform:scale(1.1);pointer-events:none}
+.splash-content{
+    animation:splashIn .8s var(--ease-spring) both;
+    position:relative;
+}
+.splash-content::before{
+    content:'';position:absolute;inset:-40px;
+    background:radial-gradient(circle, rgba(29,185,84,.35), transparent 65%);
+    filter:blur(30px);animation:pulseGlow 2.5s ease-in-out infinite;
+    z-index:-1;
+}
+@keyframes pulseGlow{0%,100%{transform:scale(.9);opacity:.6}50%{transform:scale(1.2);opacity:1}}
+@keyframes splashIn{
+    from{opacity:0;transform:scale(.7) translateY(20px)}
+    to{opacity:1;transform:scale(1) translateY(0)}
+}
+.splash-img,#splashSvg{
+    width:160px;height:160px;border-radius:36px;
+    box-shadow:0 24px 80px rgba(29,185,84,.5), 0 0 0 1px rgba(255,255,255,.08);
+    object-fit:cover;display:block;
+}
+.splash-loader{
+    margin-top:48px;width:140px;height:3px;
+    background:rgba(255,255,255,.08);border-radius:99px;
+    overflow:hidden;position:relative;
+}
+.splash-bar{
+    position:absolute;left:-50%;width:50%;height:100%;
+    background:linear-gradient(90deg, transparent, #1db954, #00d4ff, transparent);
+    border-radius:99px;
+    animation:loadBar 1.4s cubic-bezier(.65,.05,.36,1) infinite;
+}
+@keyframes loadBar{0%{left:-50%}100%{left:100%}}
 
-    /* ===== PLAYER ===== */
-    .player-bar {
-        position: absolute; bottom: 0; left: 0; right: 0; height: var(--player-height);
-        background: rgba(10, 10, 15, 0.95);
-        backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
-        border-top: 1px solid var(--border-light);
-        display: flex; align-items: center; padding: 0 24px; gap: 24px; z-index: 200;
-        box-shadow: 0 -10px 40px -10px rgba(0,0,0,0.8);
-    }
-    .now-playing { display: flex; align-items: center; gap: 16px; width: 30%; min-width: 200px; }
-    .np-cover {
-        width: 56px; height: 56px; border-radius: 10px; background: #333;
-        overflow: hidden; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    }
-    .np-cover img { width: 100%; height: 100%; object-fit: cover; }
-    .np-cover.playing::after {
-        content: ''; position: absolute; inset: 0; border: 2px solid var(--accent); border-radius: 10px;
-        box-shadow: inset 0 0 15px var(--accent-glow); animation: pulse 2s infinite;
-    }
-    @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
-    .np-info { flex: 1; min-width: 0; }
-    .np-title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .np-artist { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* ============================================================
+   SIDEBAR
+============================================================ */
+.sidebar{
+    width:var(--sidebar-w);
+    background:var(--bg-glass);
+    backdrop-filter:blur(32px) saturate(1.4);
+    -webkit-backdrop-filter:blur(32px) saturate(1.4);
+    border-right:1px solid var(--border-glass);
+    display:flex;flex-direction:column;
+    padding:28px 16px 20px;
+    z-index:100;
+    position:relative;
+    transition:transform .4s var(--ease-smooth);
+}
+.sidebar::after{
+    content:'';position:absolute;top:0;right:0;bottom:0;width:1px;
+    background:linear-gradient(180deg, transparent, rgba(var(--dyn),.4), transparent);
+    opacity:.6;
+}
 
-    .player-controls { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; gap: 8px; }
-    .controls-btns { display: flex; align-items: center; gap: 18px; }
-    .ctrl-btn {
-        background: none; border: none; color: white; cursor: pointer;
-        transition: all 0.3s; display: flex; align-items: center; justify-content: center;
-    }
-    .ctrl-btn:hover { transform: scale(1.15); color: var(--accent-2); }
-    .ctrl-btn svg { width: 22px; height: 22px; fill: currentColor; }
-    .play-pause-btn {
-        width: 46px; height: 46px; border-radius: 50%;
-        background: var(--gradient-1); color: #000 !important;
-        margin: 0 10px; box-shadow: 0 0 20px rgba(0,212,255,0.4);
-        transition: all 0.3s;
-    }
-    .play-pause-btn:hover { transform: scale(1.08); box-shadow: 0 0 30px rgba(0,212,255,0.6); }
-    .play-pause-btn svg { width: 20px; height: 20px; margin-left: 2px; }
-    .play-pause-btn.playing svg { margin-left: 0; }
+.logo{
+    font-size:22px;font-weight:800;letter-spacing:-1.2px;
+    margin-bottom:36px;padding-left:12px;
+    display:flex;align-items:center;gap:10px;
+    position:relative;
+}
+.logo::before{
+    content:'';width:30px;height:30px;border-radius:9px;
+    background:var(--gradient-1);
+    box-shadow:0 4px 20px var(--accent-glow);
+    display:inline-block;flex-shrink:0;
+    position:relative;
+}
+.logo::after{
+    content:'♪';position:absolute;left:6px;top:50%;transform:translateY(-52%);
+    font-size:16px;color:#000;font-weight:900;pointer-events:none;
+}
+.logo span{
+    background:var(--gradient-1);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;
+}
 
-    .ctrl-btn.side-btn { color: var(--text-muted); }
-    .ctrl-btn.side-btn.active { color: var(--accent); position: relative; }
-    .ctrl-btn.side-btn.active::after {
-        content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
-        width: 4px; height: 4px; border-radius: 50%; background: var(--accent);
-        box-shadow: 0 0 8px var(--accent);
-    }
+.nav-menu{display:flex;flex-direction:column;gap:4px;flex:1}
+.nav-item{
+    display:flex;align-items:center;gap:14px;
+    padding:12px 14px;border-radius:12px;cursor:pointer;
+    color:var(--text-muted);font-weight:500;font-size:14px;
+    transition:all .3s var(--ease-smooth);
+    position:relative;overflow:hidden;
+}
+.nav-item::before{
+    content:'';position:absolute;inset:0;
+    background:var(--gradient-1);opacity:0;transition:opacity .3s;
+    z-index:-1;
+}
+.nav-item:hover{color:var(--text-main);background:var(--bg-card-hover)}
+.nav-item.active{
+    color:var(--text-main);
+    background:rgba(var(--dyn),.12);
+    box-shadow:inset 0 0 0 1px rgba(var(--dyn),.25);
+}
+.nav-item.active::after{
+    content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
+    width:3px;height:22px;background:var(--gradient-1);
+    border-radius:0 3px 3px 0;
+    box-shadow:0 0 12px var(--accent-glow);
+}
+.nav-item svg{width:20px;height:20px;fill:currentColor;flex-shrink:0;transition:transform .3s var(--ease-spring)}
+.nav-item.active svg{color:var(--accent);transform:scale(1.1)}
+.nav-item:active{transform:scale(.97)}
 
-    .progress-container { display: flex; align-items: center; gap: 12px; width: 100%; max-width: 500px; font-size: 11px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
-    .progress-bar {
-        flex: 1; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px;
-        cursor: pointer; position: relative; overflow: hidden;
-    }
-    .progress-fill {
-        height: 100%; background: var(--gradient-1); border-radius: 2px; width: 0%;
-        position: relative; box-shadow: 0 0 10px rgba(0,212,255,0.5);
-    }
-    .progress-fill::after {
-        content: ''; position: absolute; right: -6px; top: -4px; width: 10px; height: 10px;
-        background: white; border-radius: 50%; opacity: 0; transition: opacity 0.2s;
-        box-shadow: 0 0 8px var(--accent-2);
-    }
-    .progress-bar:hover .progress-fill::after { opacity: 1; }
+.nav-shortcut{
+    margin-left:auto;font-family:'JetBrains Mono',monospace;
+    font-size:10px;color:var(--text-dim);
+    padding:2px 6px;border-radius:4px;
+    background:rgba(255,255,255,.05);border:1px solid var(--border-glass);
+    opacity:0;transition:opacity .2s;
+}
+.nav-item:hover .nav-shortcut{opacity:1}
 
-    /* ===== VISUALIZER ===== */
-    .visualizer { width: 25%; height: 40px; display: flex; align-items: flex-end; justify-content: flex-end; gap: 3px; opacity: 0.7; }
-    .bar {
-        width: 4px; background: var(--gradient-1); border-radius: 2px 2px 0 0; height: 10%;
-        transition: height 0.1s;
+.theme-btn{
+    margin-top:auto;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    padding:12px;border-radius:12px;
+    background:var(--bg-card);border:1px solid var(--border-glass);
+    color:var(--text-main);cursor:pointer;
+    font-weight:600;font-size:12px;font-family:inherit;
+    transition:all .3s var(--ease-smooth);
+}
+.theme-btn:hover{background:var(--bg-card-hover);border-color:var(--border-light);transform:translateY(-1px)}
+.theme-btn:active{transform:scale(.97)}
+
+/* ============================================================
+   MAIN
+============================================================ */
+.main-content{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;z-index:1}
+
+.header{
+    padding:28px 40px 16px;
+    display:flex;justify-content:space-between;align-items:center;
+    gap:20px;z-index:10;
+}
+.header h1{
+    font-size:30px;font-weight:800;letter-spacing:-1px;
+    background:linear-gradient(135deg, var(--text-main) 0%, var(--text-muted) 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;
+    animation:fadeIn .5s var(--ease-smooth);
+}
+
+.header-actions{display:flex;align-items:center;gap:10px}
+
+.search-box{
+    position:relative;display:flex;align-items:center;
+    background:var(--bg-card);border:1px solid var(--border-glass);
+    border-radius:12px;padding:0 14px;height:42px;
+    transition:all .3s var(--ease-smooth);width:240px;
+}
+.search-box:focus-within{
+    width:300px;border-color:rgba(var(--dyn),.5);
+    box-shadow:0 0 0 3px rgba(var(--dyn),.1);
+}
+.search-box svg{width:16px;height:16px;fill:var(--text-muted);flex-shrink:0}
+.search-box input{
+    flex:1;background:none;border:none;outline:none;
+    color:var(--text-main);font-size:13px;font-family:inherit;
+    padding:0 10px;
+}
+.search-box input::placeholder{color:var(--text-dim)}
+
+.kbd-hint{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;color:var(--text-dim);
+    padding:3px 6px;border-radius:5px;
+    background:rgba(255,255,255,.05);
+    border:1px solid var(--border-glass);
+    white-space:nowrap;
+}
+
+.icon-btn{
+    width:42px;height:42px;border-radius:12px;
+    background:var(--bg-card);border:1px solid var(--border-glass);
+    color:var(--text-main);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:all .3s var(--ease-smooth);
+    flex-shrink:0;
+}
+.icon-btn:hover{background:var(--bg-card-hover);border-color:var(--border-light);transform:translateY(-1px)}
+.icon-btn:active{transform:scale(.94)}
+.icon-btn svg{width:18px;height:18px;fill:currentColor}
+.theme-btn-mobile{display:none}
+
+/* Views */
+.view-container{
+    flex:1;overflow-y:auto;
+    padding:0 40px calc(var(--player-height) + 48px);
+    scroll-behavior:smooth;
+}
+.view-container::-webkit-scrollbar{width:8px}
+.view-container::-webkit-scrollbar-track{background:transparent}
+.view-container::-webkit-scrollbar-thumb{
+    background:rgba(var(--dyn),.25);border-radius:99px;
+    transition:background .3s;
+}
+.view-container::-webkit-scrollbar-thumb:hover{background:rgba(var(--dyn),.5)}
+
+.view-section{display:none}
+.view-section.active{display:block;animation:viewIn .5s var(--ease-smooth)}
+@keyframes viewIn{
+    from{opacity:0;transform:translateY(12px)}
+    to{opacity:1;transform:translateY(0)}
+}
+@keyframes fadeIn{
+    from{opacity:0;transform:translateY(8px)}
+    to{opacity:1;transform:translateY(0)}
+}
+
+/* ============================================================
+   MUSIC CARDS — 3D tilt
+============================================================ */
+.music-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+    gap:20px;
+}
+
+.music-card{
+    background:var(--bg-card);
+    border:1px solid var(--border-glass);
+    border-radius:var(--radius);
+    padding:14px;
+    cursor:pointer;
+    position:relative;
+    transition:transform .45s var(--ease-spring),
+               box-shadow .45s var(--ease-smooth),
+               border-color .3s,
+               background .3s;
+    transform-style:preserve-3d;
+    will-change:transform;
+}
+.music-card:hover{
+    background:var(--bg-card-hover);
+    border-color:rgba(var(--dyn),.35);
+    box-shadow:var(--shadow-card),var(--shadow-glow);
+}
+.music-card.active{
+    border-color:rgba(var(--dyn),.7);
+    box-shadow:0 0 0 1px rgba(var(--dyn),.4), 0 0 32px -4px rgba(var(--dyn),.5);
+}
+.music-card.active .card-img-wrapper::before{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(135deg, rgba(var(--dyn),.3), transparent 60%);
+    z-index:2;pointer-events:none;
+}
+
+.card-img-wrapper{
+    width:100%;aspect-ratio:1;
+    border-radius:12px;overflow:hidden;
+    margin-bottom:12px;position:relative;
+    background:linear-gradient(135deg, #222 0%, #333 100%);
+    box-shadow:0 8px 24px -8px rgba(0,0,0,.7);
+    transform:translateZ(20px);
+}
+.card-img-wrapper::after{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(180deg, transparent 60%, rgba(0,0,0,.6) 100%);
+    opacity:0;transition:opacity .3s;
+}
+.music-card:hover .card-img-wrapper::after{opacity:1}
+.card-img-wrapper img{
+    width:100%;height:100%;object-fit:cover;
+    transition:transform .6s var(--ease-smooth);
+}
+.music-card:hover .card-img-wrapper img{transform:scale(1.1)}
+
+.card-title{
+    font-size:13px;font-weight:700;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    margin-bottom:3px;letter-spacing:-.2px;
+}
+.card-artist{
+    font-size:11px;color:var(--text-muted);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+.fav-btn,.del-btn{
+    position:absolute;top:20px;
+    width:30px;height:30px;border-radius:50%;
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,.2);
+    color:white;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:all .3s var(--ease-spring);
+    z-index:5;padding:0;font-size:12px;
+    opacity:0;transform:scale(.7);
+}
+.fav-btn{right:20px;background:rgba(0,0,0,.65)}
+.del-btn{left:20px;background:rgba(220,53,69,.75)}
+.music-card:hover .fav-btn,
+.music-card:hover .del-btn{opacity:1;transform:scale(1)}
+.fav-btn:hover{transform:scale(1.2)!important;background:rgba(29,185,84,.9)}
+.fav-btn.active{opacity:1;transform:scale(1)!important;background:rgba(29,185,84,.95);border-color:rgba(255,255,255,.4)}
+.del-btn:hover{transform:scale(1.2)!important;background:rgb(220,53,69)}
+.del-btn svg{width:14px;height:14px;fill:white}
+.fav-btn svg{width:14px;height:14px;fill:currentColor}
+
+/* ============================================================
+   BÍBLIA
+============================================================ */
+.bible-layout{display:flex;gap:32px;height:calc(100vh - 200px)}
+.bible-sidebar{
+    width:230px;overflow-y:auto;
+    display:flex;flex-direction:column;gap:3px;
+    padding-right:20px;border-right:1px solid var(--border-glass);
+}
+.bible-sidebar::-webkit-scrollbar{width:5px}
+.bible-sidebar::-webkit-scrollbar-thumb{background:rgba(var(--dyn),.3);border-radius:99px}
+
+.bible-book-btn{
+    padding:10px 14px;background:transparent;border:none;
+    color:var(--text-muted);text-align:left;
+    font-size:13px;border-radius:10px;cursor:pointer;
+    transition:all .25s var(--ease-smooth);font-family:inherit;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.bible-book-btn:hover{background:var(--bg-card-hover);color:var(--text-main);transform:translateX(2px)}
+.bible-book-btn.active{
+    background:rgba(var(--dyn),.12);color:var(--text-main);
+    font-weight:600;box-shadow:inset 2px 0 0 var(--accent);
+}
+
+.bible-reader{flex:1;overflow-y:auto;padding-right:16px}
+.bible-reader::-webkit-scrollbar{width:6px}
+.bible-reader::-webkit-scrollbar-thumb{background:rgba(var(--dyn),.3);border-radius:99px}
+
+.chapter-selector{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px}
+.chapter-btn{
+    width:40px;height:40px;border-radius:50%;
+    background:var(--bg-card);border:1px solid var(--border-glass);
+    color:var(--text-main);cursor:pointer;font-size:13px;
+    transition:all .3s var(--ease-spring);font-family:inherit;font-weight:600;
+}
+.chapter-btn:hover{background:var(--bg-card-hover);border-color:var(--border-light);transform:translateY(-2px)}
+.chapter-btn.active{
+    background:var(--gradient-1);color:#000;font-weight:800;
+    border-color:transparent;
+    box-shadow:0 8px 24px -4px rgba(var(--dyn),.6);
+    transform:translateY(-2px);
+}
+
+.bible-text-content{
+    font-family:'Playfair Display',serif;
+    font-size:18px;line-height:1.95;
+    color:rgba(255,255,255,.85);
+}
+body.light-mode .bible-text-content{color:rgba(10,10,20,.82)}
+.bible-text-content p{margin-bottom:24px;animation:verseIn .5s var(--ease-smooth) backwards}
+.bible-text-content p:nth-child(1){animation-delay:.05s}
+.bible-text-content p:nth-child(2){animation-delay:.08s}
+.bible-text-content p:nth-child(3){animation-delay:.11s}
+.bible-text-content p:nth-child(n+4){animation-delay:.14s}
+@keyframes verseIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.verse-num{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;color:var(--accent);font-weight:700;
+    margin-right:8px;vertical-align:super;
+}
+
+.tts-bar{margin-bottom:28px;display:flex;gap:10px;flex-wrap:wrap}
+.tts-btn{
+    padding:11px 20px;background:var(--bg-card);
+    border:1px solid var(--border-glass);
+    color:var(--text-main);border-radius:12px;
+    font-size:13px;font-weight:600;cursor:pointer;
+    transition:all .3s var(--ease-spring);font-family:inherit;
+    display:inline-flex;align-items:center;gap:8px;
+}
+.tts-btn:hover{background:var(--bg-card-hover);border-color:rgba(var(--dyn),.4);transform:translateY(-1px)}
+.tts-btn.playing{
+    background:var(--gradient-1);color:#000;border-color:transparent;
+    box-shadow:0 8px 24px -6px rgba(var(--dyn),.6);
+}
+
+.bible-download-card{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    height:100%;min-height:400px;text-align:center;
+    padding:56px 40px;
+    background:var(--bg-card);border:1px dashed rgba(var(--dyn),.3);
+    border-radius:var(--radius-lg);gap:16px;
+    animation:fadeIn .6s var(--ease-smooth);
+}
+.bible-download-card .icon{font-size:64px;filter:drop-shadow(0 8px 24px rgba(var(--dyn),.5))}
+.bible-download-card h2{font-size:26px;font-weight:800;letter-spacing:-.5px}
+.bible-download-card p{color:var(--text-muted);max-width:400px;line-height:1.65;font-size:14px}
+.btn-download{
+    padding:16px 36px;background:var(--gradient-1);color:#000;
+    border:none;border-radius:14px;font-size:15px;font-weight:800;
+    cursor:pointer;transition:all .3s var(--ease-spring);margin-top:12px;
+    font-family:inherit;letter-spacing:.3px;
+    box-shadow:0 12px 32px -8px rgba(var(--dyn),.6);
+}
+.btn-download:hover{transform:translateY(-2px) scale(1.02);filter:brightness(1.1);box-shadow:0 16px 40px -8px rgba(var(--dyn),.7)}
+.btn-download:disabled{opacity:.5;cursor:wait;transform:none;box-shadow:none}
+.status{font-size:13px;color:var(--text-muted);min-height:20px;font-weight:500}
+.status.error{color:#f87171}
+.status.success{color:var(--accent)}
+
+/* ============================================================
+   YOUTUBE
+============================================================ */
+.yt-input-wrapper{display:flex;gap:12px;margin-bottom:32px}
+.yt-input-wrapper input{
+    flex:1;padding:16px 20px;
+    border-radius:14px;border:1px solid var(--border-glass);
+    background:var(--bg-card);color:var(--text-main);
+    font-size:15px;font-family:inherit;outline:none;
+    transition:all .3s var(--ease-smooth);
+}
+.yt-input-wrapper input:focus{
+    border-color:rgba(var(--dyn),.5);
+    box-shadow:0 0 0 4px rgba(var(--dyn),.1);
+}
+.btn-add{
+    padding:0 28px;background:var(--gradient-1);color:#000;
+    border:none;border-radius:14px;font-weight:800;font-size:14px;
+    cursor:pointer;transition:all .3s var(--ease-spring);
+    font-family:inherit;letter-spacing:.3px;
+    box-shadow:0 8px 20px -6px rgba(var(--dyn),.5);
+}
+.btn-add:hover{transform:translateY(-1px) scale(1.02);filter:brightness(1.1)}
+.btn-add:active{transform:scale(.97)}
+
+.yt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:22px}
+.yt-card{
+    background:var(--bg-card);border-radius:var(--radius);
+    overflow:hidden;border:1px solid var(--border-glass);
+    cursor:pointer;transition:all .4s var(--ease-spring);
+    position:relative;
+}
+.yt-card:hover{
+    transform:translateY(-8px) scale(1.01);
+    border-color:rgba(var(--dyn-2),.4);
+    box-shadow:var(--shadow-card),0 0 40px -12px rgba(var(--dyn-2),.4);
+}
+.yt-thumb{
+    width:100%;aspect-ratio:16/9;object-fit:cover;
+    background:#222;display:block;
+    transition:transform .5s var(--ease-smooth);
+}
+.yt-card:hover .yt-thumb{transform:scale(1.05)}
+.yt-info{padding:18px}
+.yt-title{font-size:15px;font-weight:700;line-height:1.4;letter-spacing:-.2px}
+.yt-play-overlay{
+    position:absolute;top:0;left:0;right:0;aspect-ratio:16/9;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.35);opacity:0;transition:opacity .3s;
+}
+.yt-card:hover .yt-play-overlay{opacity:1}
+.yt-play-overlay .play-circle{
+    width:64px;height:64px;border-radius:50%;
+    background:rgba(0,0,0,.75);
+    display:flex;align-items:center;justify-content:center;
+    backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,.3);
+    transition:transform .3s var(--ease-spring);
+}
+.yt-card:hover .yt-play-overlay .play-circle{transform:scale(1.1)}
+.yt-play-overlay svg{width:28px;height:28px;fill:white;margin-left:4px}
+.yt-del-btn{
+    position:absolute;top:12px;left:12px;
+    width:34px;height:34px;border-radius:50%;
+    background:rgba(220,53,69,.85);
+    backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,.2);
+    color:white;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:all .3s var(--ease-spring);z-index:10;padding:0;
+    opacity:0;transform:scale(.7);
+}
+.yt-card:hover .yt-del-btn{opacity:1;transform:scale(1)}
+.yt-del-btn:hover{background:rgb(220,53,69);transform:scale(1.15)!important}
+.yt-del-btn svg{width:16px;height:16px;fill:white}
+
+/* YouTube modal */
+.yt-modal{
+    position:fixed;inset:0;background:rgba(0,0,0,.94);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    z-index:1000;display:flex;align-items:center;justify-content:center;
+    padding:20px;animation:fadeIn .3s var(--ease-smooth);
+}
+.yt-modal.hidden{display:none}
+.yt-modal-content{
+    position:relative;width:100%;max-width:960px;
+    aspect-ratio:16/9;background:#000;
+    border-radius:var(--radius);overflow:hidden;
+    box-shadow:0 32px 80px rgba(0,0,0,.9);
+    animation:modalIn .4s var(--ease-spring);
+}
+@keyframes modalIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.yt-modal-iframe-wrap{position:absolute;inset:0}
+.yt-modal-iframe-wrap iframe{width:100%;height:100%;border:none}
+.yt-modal-close{
+    position:absolute;top:14px;right:14px;
+    width:42px;height:42px;border-radius:50%;
+    background:rgba(0,0,0,.8);border:1px solid rgba(255,255,255,.2);
+    color:white;font-size:20px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:all .3s var(--ease-spring);z-index:10;
+    backdrop-filter:blur(12px);
+}
+.yt-modal-close:hover{background:rgba(255,255,255,.2);transform:scale(1.1) rotate(90deg)}
+
+/* ============================================================
+   PLAYER BAR
+============================================================ */
+.player-bar{
+    position:absolute;bottom:12px;left:16px;right:16px;
+    height:var(--player-height);
+    background:var(--bg-glass-strong);
+    backdrop-filter:blur(40px) saturate(1.6);
+    -webkit-backdrop-filter:blur(40px) saturate(1.6);
+    border:1px solid var(--border-glass);
+    border-radius:var(--radius-lg);
+    display:flex;align-items:center;
+    padding:0 20px;gap:20px;z-index:200;
+    box-shadow:0 24px 60px -12px rgba(0,0,0,.9),
+               0 0 0 1px rgba(255,255,255,.03),
+               0 0 60px -20px rgba(var(--dyn),.3);
+    transition:box-shadow .5s;
+}
+
+.now-playing{
+    display:flex;align-items:center;gap:14px;
+    width:28%;min-width:180px;cursor:pointer;
+    transition:opacity .3s;
+}
+.now-playing:hover{opacity:.85}
+.np-cover{
+    width:56px;height:56px;border-radius:12px;
+    background:linear-gradient(135deg, #222, #333);
+    overflow:hidden;position:relative;
+    box-shadow:0 8px 24px -8px rgba(0,0,0,.8);
+    transition:transform .3s var(--ease-spring);
+    flex-shrink:0;
+}
+.now-playing:hover .np-cover{transform:scale(1.05)}
+.np-cover img{width:100%;height:100%;object-fit:cover}
+.np-cover.playing::after{
+    content:'';position:absolute;inset:-2px;
+    border-radius:14px;
+    background:conic-gradient(from 0deg, var(--accent), var(--accent-2), var(--accent));
+    z-index:-1;
+    animation:spinRing 3s linear infinite;
+    opacity:.7;
+    filter:blur(4px);
+}
+@keyframes spinRing{to{transform:rotate(360deg)}}
+
+.np-info{flex:1;min-width:0}
+.np-title{
+    font-size:14px;font-weight:700;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    margin-bottom:2px;letter-spacing:-.2px;
+}
+.np-artist{
+    font-size:12px;color:var(--text-muted);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+.player-controls{
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    flex:1;gap:8px;max-width:560px;
+}
+
+.controls-btns{display:flex;align-items:center;gap:16px}
+.ctrl-btn{
+    background:none;border:none;color:var(--text-main);
+    cursor:pointer;transition:all .25s var(--ease-spring);
+    display:flex;align-items:center;justify-content:center;
+    padding:6px;border-radius:50%;
+}
+.ctrl-btn:hover{transform:scale(1.15);color:var(--accent-2)}
+.ctrl-btn:active{transform:scale(.92)}
+.ctrl-btn svg{width:22px;height:22px;fill:currentColor}
+
+.play-pause-btn{
+    width:48px;height:48px;border-radius:50%;
+    background:var(--gradient-1);
+    color:#000 !important;
+    margin:0 6px;
+    box-shadow:0 8px 24px -4px rgba(var(--dyn),.6);
+    transition:all .3s var(--ease-spring);
+    position:relative;
+}
+.play-pause-btn::before{
+    content:'';position:absolute;inset:-4px;
+    border-radius:50%;
+    background:var(--gradient-1);
+    opacity:.4;filter:blur(12px);
+    z-index:-1;transition:opacity .3s;
+}
+.play-pause-btn:hover{
+    transform:scale(1.08);
+    box-shadow:0 12px 32px -4px rgba(var(--dyn),.7);
+}
+.play-pause-btn:hover::before{opacity:.7}
+.play-pause-btn svg{width:22px;height:22px;margin-left:2px}
+.play-pause-btn.playing svg{margin-left:0}
+
+.ctrl-btn.side-btn{color:var(--text-muted);position:relative}
+.ctrl-btn.side-btn.active{color:var(--accent)}
+.ctrl-btn.side-btn.active::after{
+    content:'';position:absolute;bottom:-4px;left:50%;
+    transform:translateX(-50%);
+    width:4px;height:4px;border-radius:50%;
+    background:var(--accent);
+    box-shadow:0 0 8px var(--accent);
+}
+
+/* Progress */
+.progress-container{
+    display:flex;align-items:center;gap:12px;
+    width:100%;font-size:11px;color:var(--text-muted);
+    font-variant-numeric:tabular-nums;
+    font-family:'JetBrains Mono',monospace;
+}
+.progress-bar{
+    flex:1;height:4px;background:rgba(255,255,255,.08);
+    border-radius:99px;cursor:pointer;position:relative;
+    touch-action:none;overflow:visible;
+    transition:height .2s;
+}
+.progress-bar:hover{height:6px}
+.progress-fill{
+    height:100%;background:var(--gradient-1);
+    border-radius:99px;width:0%;
+    position:relative;
+    box-shadow:0 0 12px rgba(var(--dyn),.6);
+    transition:width .1s linear;
+}
+.progress-fill::after{
+    content:'';position:absolute;right:-7px;top:50%;
+    transform:translateY(-50%) scale(0);
+    width:14px;height:14px;background:#fff;border-radius:50%;
+    transition:transform .2s var(--ease-spring);
+    box-shadow:0 0 12px rgba(var(--dyn),.8);
+}
+.progress-bar:hover .progress-fill::after{transform:translateY(-50%) scale(1)}
+
+.right-controls{
+    display:flex;align-items:center;justify-content:flex-end;
+    gap:14px;min-width:200px;
+}
+.volume-wrap{display:flex;align-items:center;gap:8px}
+.volume-slider{
+    width:80px;height:4px;
+    -webkit-appearance:none;appearance:none;
+    background:rgba(255,255,255,.12);border-radius:99px;
+    outline:none;cursor:pointer;
+}
+.volume-slider::-webkit-slider-thumb{
+    -webkit-appearance:none;width:14px;height:14px;
+    border-radius:50%;background:#fff;cursor:pointer;
+    box-shadow:0 0 8px var(--accent-2);
+    transition:transform .2s;
+}
+.volume-slider::-webkit-slider-thumb:hover{transform:scale(1.2)}
+.volume-slider::-moz-range-thumb{
+    width:14px;height:14px;border-radius:50%;
+    background:#fff;cursor:pointer;border:none;
+}
+
+/* Real audio visualizer */
+.visualizer{
+    display:flex;align-items:flex-end;gap:3px;height:32px;
+    opacity:.85;width:60px;
+}
+.visualizer .bar{
+    flex:1;background:var(--gradient-1);
+    border-radius:2px 2px 0 0;
+    min-height:2px;
+    transition:height .08s linear;
+}
+
+/* Expand player button */
+.expand-btn{
+    opacity:0;transition:opacity .3s;
+}
+.now-playing:hover .expand-btn{opacity:1}
+
+/* ============================================================
+   EXPANDED PLAYER (fullscreen immersive)
+============================================================ */
+.expanded-player{
+    position:fixed;inset:0;z-index:500;
+    background:#06060a;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    padding:40px 20px;
+    overflow:hidden;
+    opacity:0;pointer-events:none;
+    transition:opacity .5s var(--ease-smooth);
+}
+.expanded-player.active{opacity:1;pointer-events:auto}
+.expanded-bg{
+    position:absolute;inset:0;
+    background-size:cover;background-position:center;
+    filter:blur(80px) saturate(1.8) brightness(.4);
+    transform:scale(1.2);
+    opacity:.7;
+    transition:background-image .6s;
+    z-index:-2;
+}
+.expanded-player::before{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(circle at 50% 50%, transparent, rgba(6,6,10,.6));
+    z-index:-1;
+}
+.expanded-close{
+    position:absolute;top:24px;right:24px;
+    width:44px;height:44px;border-radius:50%;
+    background:rgba(255,255,255,.08);
+    backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,.12);
+    color:white;cursor:pointer;font-size:18px;
+    display:flex;align-items:center;justify-content:center;
+    transition:all .3s var(--ease-spring);
+    z-index:10;
+}
+.expanded-close:hover{background:rgba(255,255,255,.16);transform:rotate(90deg) scale(1.1)}
+
+.expanded-content{
+    display:flex;flex-direction:column;
+    align-items:center;
+    gap:28px;
+    max-width:520px;width:100%;
+    z-index:1;
+}
+.expanded-art{
+    width:100%;max-width:360px;aspect-ratio:1;
+    border-radius:24px;overflow:hidden;
+    box-shadow:0 40px 100px -20px rgba(0,0,0,.9),
+               0 0 80px -10px rgba(var(--dyn),.4);
+    position:relative;
+    animation:artFloat 6s ease-in-out infinite;
+    transform-origin:center;
+}
+@keyframes artFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.expanded-art img{width:100%;height:100%;object-fit:cover}
+.expanded-art.playing::before{
+    content:'';position:absolute;inset:-3px;border-radius:26px;
+    background:conic-gradient(from 0deg, var(--accent), var(--accent-2), var(--accent));
+    z-index:-1;animation:spinRing 4s linear infinite;
+    opacity:.6;filter:blur(8px);
+}
+
+.expanded-info{text-align:center;color:#fff}
+.expanded-info h1{
+    font-size:24px;font-weight:800;
+    margin-bottom:6px;letter-spacing:-.5px;
+}
+.expanded-info p{color:rgba(255,255,255,.6);font-size:14px}
+
+.expanded-viz{
+    width:100%;height:80px;
+    display:block;
+}
+
+.expanded-progress{
+    width:100%;
+    display:flex;flex-direction:column;gap:8px;
+    color:rgba(255,255,255,.7);
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+}
+.expanded-progress .times{display:flex;justify-content:space-between}
+.expanded-progress .bar-wrap{
+    height:5px;background:rgba(255,255,255,.12);
+    border-radius:99px;cursor:pointer;position:relative;
+    overflow:hidden;
+}
+.expanded-progress .bar-fill{
+    height:100%;background:linear-gradient(90deg, var(--accent), var(--accent-2));
+    border-radius:99px;width:0%;transition:width .1s linear;
+    box-shadow:0 0 16px rgba(var(--dyn),.6);
+}
+
+.expanded-controls{
+    display:flex;align-items:center;gap:24px;
+}
+.expanded-controls .ctrl-btn{color:#fff}
+.expanded-controls .ctrl-btn:hover{color:var(--accent-2)}
+.expanded-controls .play-pause-btn{
+    width:64px;height:64px;
+}
+.expanded-controls .play-pause-btn svg{width:28px;height:28px}
+.expanded-controls .ctrl-btn svg{width:26px;height:26px}
+
+/* ============================================================
+   FAB
+============================================================ */
+.fab{
+    position:absolute;bottom:calc(var(--player-height) + 32px);
+    right:32px;width:56px;height:56px;border-radius:50%;
+    background:var(--gradient-1);color:#000;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 12px 32px rgba(var(--dyn),.55);
+    cursor:pointer;z-index:150;
+    transition:all .4s var(--ease-spring);
+}
+.fab:hover{transform:scale(1.1) rotate(90deg);box-shadow:0 16px 40px rgba(var(--dyn),.7)}
+.fab:active{transform:scale(.94) rotate(90deg)}
+.fab svg{width:26px;height:26px;fill:currentColor}
+
+/* ============================================================
+   TOAST
+============================================================ */
+.toast{
+    position:fixed;bottom:calc(var(--player-height) + 100px);
+    left:50%;transform:translateX(-50%) translateY(120px);
+    opacity:0;background:rgba(20,20,28,.98);
+    color:var(--text-main);padding:14px 24px;
+    border-radius:14px;font-size:13px;font-weight:600;
+    box-shadow:0 24px 48px -12px rgba(0,0,0,.9);
+    z-index:600;
+    transition:all .4s var(--ease-spring);
+    border:1px solid var(--border-glass);
+    border-left:3px solid var(--accent);
+    max-width:90vw;
+    backdrop-filter:blur(20px);
+    font-family:inherit;
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.error{border-left-color:#f87171}
+.toast.success{border-left-color:var(--accent)}
+
+/* ============================================================
+   COMMAND PALETTE
+============================================================ */
+.palette-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.6);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    z-index:2000;
+    display:flex;align-items:flex-start;justify-content:center;
+    padding-top:15vh;
+    opacity:0;pointer-events:none;
+    transition:opacity .25s var(--ease-smooth);
+}
+.palette-overlay.active{opacity:1;pointer-events:auto}
+
+.palette{
+    width:100%;max-width:600px;
+    background:var(--bg-glass-strong);
+    border:1px solid var(--border-light);
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 32px 100px -20px rgba(0,0,0,.9),
+               0 0 0 1px rgba(255,255,255,.03);
+    transform:translateY(-20px) scale(.96);
+    transition:transform .3s var(--ease-spring);
+    backdrop-filter:blur(40px);
+}
+.palette-overlay.active .palette{transform:translateY(0) scale(1)}
+
+.palette-input-wrap{
+    display:flex;align-items:center;gap:12px;
+    padding:18px 22px;
+    border-bottom:1px solid var(--border-glass);
+}
+.palette-input-wrap svg{width:20px;height:20px;fill:var(--text-muted);flex-shrink:0}
+.palette-input-wrap input{
+    flex:1;background:none;border:none;outline:none;
+    color:var(--text-main);font-size:16px;font-family:inherit;
+}
+.palette-input-wrap input::placeholder{color:var(--text-dim)}
+.palette-kbd{
+    font-family:'JetBrains Mono',monospace;font-size:10px;
+    color:var(--text-muted);
+    padding:3px 7px;border-radius:5px;
+    background:rgba(255,255,255,.06);
+    border:1px solid var(--border-glass);
+}
+
+.palette-results{
+    max-height:400px;overflow-y:auto;
+    padding:8px;
+}
+.palette-results::-webkit-scrollbar{width:6px}
+.palette-results::-webkit-scrollbar-thumb{background:rgba(var(--dyn),.3);border-radius:99px}
+
+.palette-item{
+    display:flex;align-items:center;gap:14px;
+    padding:12px 14px;border-radius:12px;cursor:pointer;
+    transition:background .15s;
+    color:var(--text-main);font-size:14px;
+}
+.palette-item:hover,
+.palette-item.selected{
+    background:rgba(var(--dyn),.15);
+}
+.palette-item-icon{
+    width:32px;height:32px;border-radius:8px;
+    background:rgba(255,255,255,.05);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;font-size:16px;
+    overflow:hidden;
+}
+.palette-item-icon img{width:100%;height:100%;object-fit:cover}
+.palette-item-content{flex:1;min-width:0}
+.palette-item-title{
+    font-size:13px;font-weight:600;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.palette-item-sub{
+    font-size:11px;color:var(--text-muted);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.palette-item-hint{
+    font-size:10px;color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace;
+    padding:2px 6px;border-radius:4px;
+    background:rgba(255,255,255,.04);
+}
+
+.palette-footer{
+    display:flex;gap:16px;
+    padding:10px 20px;
+    background:rgba(0,0,0,.2);
+    border-top:1px solid var(--border-glass);
+    font-size:11px;color:var(--text-muted);
+    font-family:'JetBrains Mono',monospace;
+}
+.palette-footer span{display:flex;align-items:center;gap:4px}
+
+.palette-empty{
+    text-align:center;padding:40px 20px;
+    color:var(--text-muted);font-size:13px;
+}
+.palette-empty .emoji{font-size:32px;display:block;margin-bottom:8px;opacity:.5}
+
+.palette-section-label{
+    font-size:10px;font-weight:700;
+    text-transform:uppercase;letter-spacing:1px;
+    color:var(--text-dim);
+    padding:12px 14px 6px;
+}
+
+/* ============================================================
+   EMPTY STATE
+============================================================ */
+.empty-state{
+    grid-column:1/-1;text-align:center;
+    padding:80px 20px;
+    animation:fadeIn .5s var(--ease-smooth);
+}
+.empty-state .emoji{font-size:56px;margin-bottom:16px;opacity:.7;display:block}
+.empty-state p{color:var(--text-muted);font-size:14px;line-height:1.7}
+
+/* ============================================================
+   SLEEP TIMER
+============================================================ */
+.sleep-timer-menu{
+    position:absolute;
+    bottom:calc(var(--player-height) + 24px);
+    right:16px;
+    background:var(--bg-glass-strong);
+    backdrop-filter:blur(32px);
+    border:1px solid var(--border-light);
+    border-radius:16px;
+    padding:8px;
+    z-index:250;
+    min-width:200px;
+    box-shadow:0 24px 60px -12px rgba(0,0,0,.9);
+    opacity:0;pointer-events:none;
+    transform:translateY(10px);
+    transition:all .3s var(--ease-spring);
+}
+.sleep-timer-menu.active{opacity:1;pointer-events:auto;transform:translateY(0)}
+.sleep-timer-menu button{
+    display:flex;align-items:center;gap:10px;
+    width:100%;padding:10px 14px;
+    background:none;border:none;
+    color:var(--text-main);cursor:pointer;
+    font-size:13px;font-family:inherit;
+    border-radius:10px;transition:background .2s;
+    text-align:left;
+}
+.sleep-timer-menu button:hover{background:rgba(var(--dyn),.15)}
+.sleep-timer-menu button.active{color:var(--accent);font-weight:600}
+.sleep-timer-menu button svg{width:16px;height:16px;fill:currentColor;flex-shrink:0}
+
+/* ============================================================
+   MOBILE
+============================================================ */
+@media (max-width:900px){
+    .search-box{width:180px}
+    .search-box:focus-within{width:220px}
+    .kbd-hint{display:none}
+}
+
+@media (max-width:768px){
+    :root{--player-height:74px}
+
+    .sidebar{
+        position:fixed;bottom:0;left:0;right:0;
+        width:100%;height:64px;
+        flex-direction:row;padding:0;
+        border-right:none;border-top:1px solid var(--border-glass);
+        z-index:300;
+        background:rgba(10,10,16,.95);
+        backdrop-filter:blur(32px);
+        border-radius:0;
     }
-    .playing .bar { animation: bounce 1.2s infinite ease-in-out alternate; }
-    .bar:nth-child(2) { animation-delay: 0.2s; }
-    .bar:nth-child(3) { animation-delay: 0.4s; }
-    .bar:nth-child(4) { animation-delay: 0.1s; }
-    .bar:nth-child(5) { animation-delay: 0.5s; }
-    .bar:nth-child(6) { animation-delay: 0.3s; }
-    @keyframes bounce { 0% { height: 10%; } 100% { height: 100%; } }
-
-    /* ===== FAB ===== */
-    .fab {
-        position: absolute; bottom: calc(var(--player-height) + 24px); right: 32px;
-        width: 56px; height: 56px; border-radius: 50%;
-        background: var(--gradient-1); color: #000;
-        display: flex; align-items: center; justify-content: center;
-        box-shadow: 0 8px 30px var(--accent-glow); cursor: pointer; z-index: 150;
-        transition: all 0.3s;
+    .sidebar::after{display:none}
+    .logo,.theme-btn{display:none}
+    .nav-menu{
+        flex-direction:row;width:100%;
+        justify-content:space-around;align-items:center;
     }
-    .fab:hover { transform: scale(1.1) rotate(90deg); box-shadow: 0 10px 40px var(--accent-glow); }
-    .fab svg { width: 26px; height: 26px; fill: currentColor; }
-
-    /* ===== TOAST ===== */
-    .toast {
-        position: fixed; bottom: calc(var(--player-height) + 100px); left: 50%;
-        transform: translateX(-50%) translateY(100px); opacity: 0;
-        background: rgba(20,20,25,0.98); color: white; padding: 14px 24px;
-        border-radius: var(--radius-sm); font-size: 14px; font-weight: 500;
-        box-shadow: 0 20px 40px -10px rgba(0,0,0,0.8);
-        z-index: 500; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border-left: 3px solid var(--accent); max-width: 90vw;
-        backdrop-filter: blur(20px);
+    .nav-item{
+        flex-direction:column;gap:3px;padding:8px;
+        font-size:10px;border-radius:0;flex:1;
+        transition:color .2s;
     }
-    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-    .toast.error { border-left-color: #f87171; }
+    .nav-item.active::after{display:none}
+    .nav-item.active{background:transparent;color:var(--accent);box-shadow:none}
+    .nav-item.active svg{transform:scale(1.15)}
+    .nav-item svg{width:20px;height:20px}
+    .nav-shortcut{display:none}
 
-    /* ===== EMPTY STATE ===== */
-    .empty-state { grid-column: 1/-1; text-align: center; padding: 60px 20px; }
-    .empty-state .emoji { font-size: 48px; margin-bottom: 16px; }
-    .empty-state p { color: var(--text-muted); font-size: 15px; line-height: 1.6; }
+    .main-content{margin-bottom:64px}
+    .header{padding:18px 16px 10px;flex-wrap:wrap}
+    .header h1{font-size:22px}
+    .header-actions{gap:8px}
+    .search-box{width:130px;height:38px;padding:0 10px}
+    .search-box:focus-within{width:180px}
+    .icon-btn{width:38px;height:38px}
+    .theme-btn-mobile{display:flex}
 
-    /* ===== MOBILE ===== */
-    @media (max-width: 768px) {
-        .sidebar {
-            position: fixed; bottom: 0; left: 0; right: 0; width: 100%; height: 70px;
-            flex-direction: row; padding: 0; border-right: none; border-top: 1px solid var(--border-glass);
-            z-index: 300; background: rgba(10,10,15,0.95);
-            backdrop-filter: blur(30px);
-        }
-        .logo, .theme-btn { display: none; }
-        .nav-menu { flex-direction: row; width: 100%; justify-content: space-around; align-items: center; }
-        .nav-item {
-            flex-direction: column; gap: 4px; padding: 8px; font-size: 10px;
-            border-radius: 0; transform: none !important;
-        }
-        .nav-item.active::before { display: none; }
-        .nav-item.active { background: transparent; color: var(--accent); }
-        .nav-item svg { width: 20px; height: 20px; }
-        
-        .main-content { margin-bottom: 70px; }
-        .header { padding: 20px 16px 12px; }
-        .header h1 { font-size: 22px; }
-        .theme-btn-mobile { display: flex; }
-        
-        .view-container { padding: 0 16px calc(var(--player-height) + 90px); }
-        
-        .music-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .music-card { padding: 8px; border-radius: 12px; }
-        .card-img-wrapper { margin-bottom: 6px; border-radius: 8px; }
-        .card-title { font-size: 10px; }
-        .card-artist { font-size: 8px; }
-        .fav-btn { top: 8px; right: 8px; width: 22px; height: 22px; font-size: 10px; }
-        .del-btn { top: 8px; left: 8px; width: 22px; height: 22px; }
-        .del-btn svg { width: 11px; height: 11px; }
+    .view-container{padding:0 16px calc(var(--player-height) + 84px)}
 
-        .bible-layout { flex-direction: column; height: auto; }
-        .bible-sidebar {
-            width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border-glass);
-            padding-bottom: 12px; flex-direction: row; overflow-x: auto;
-        }
-        .bible-book-btn { white-space: nowrap; }
-        .player-bar {
-            bottom: 70px; height: 70px; padding: 0 16px; gap: 12px;
-            border-radius: 16px 16px 0 0; border: 1px solid var(--border-glass); border-bottom: none;
-        }
-        .now-playing { width: auto; flex: 1; }
-        .np-cover { width: 44px; height: 44px; border-radius: 8px; }
-        .player-controls { flex: 0; }
-        .progress-container, .visualizer { display: none; }
-        .fab { bottom: calc(var(--player-height) + 90px); right: 16px; width: 50px; height: 50px; }
-        .yt-modal { padding: 8px; }
-        .splash-img, #splashSvg { width: 140px; height: 140px; }
-        .controls-btns { gap: 10px; }
+    .music-grid{grid-template-columns:repeat(3,1fr);gap:12px}
+    .music-card{padding:8px;border-radius:14px}
+    .card-img-wrapper{margin-bottom:8px;border-radius:10px}
+    .card-title{font-size:11px}
+    .card-artist{font-size:9px}
+    .fav-btn,.del-btn{top:12px;width:24px;height:24px;opacity:.85;transform:scale(1)}
+    .fav-btn{right:12px}
+    .del-btn{left:12px}
+    .del-btn svg{width:11px;height:11px}
+    .fav-btn svg{width:11px;height:11px}
+
+    .bible-layout{flex-direction:column;height:auto}
+    .bible-sidebar{
+        width:100%;height:auto;
+        border-right:none;border-bottom:1px solid var(--border-glass);
+        padding:0 0 12px;flex-direction:row;
+        overflow-x:auto;overflow-y:hidden;
     }
+    .bible-sidebar::-webkit-scrollbar{height:0}
+    .bible-book-btn{white-space:nowrap;flex-shrink:0}
 
-    /* ===== TEMA CLARO ===== */
-    body.light-mode {
-        --bg-base: #f0f2f5;
-        --bg-glass: rgba(255, 255, 255, 0.85);
-        --bg-card: #ffffff;
-        --bg-card-hover: #f8f9fa;
-        --border-glass: rgba(0, 0, 0, 0.08);
-        --border-light: rgba(0, 0, 0, 0.12);
-        --text-main: #121212;
-        --text-muted: #666;
-        background-image: none;
+    .player-bar{
+        bottom:0;left:0;right:0;
+        height:var(--player-height);
+        padding:0 14px;gap:10px;
+        border-radius:20px 20px 0 0;
+        border:1px solid var(--border-glass);
+        border-bottom:none;
     }
-    body.light-mode .player-bar { background: rgba(255, 255, 255, 0.95); }
-    body.light-mode .bible-text-content { color: #333; }
-    body.light-mode .bible-download-card { background: #fff; }
-    body.light-mode .fav-btn { background: rgba(255,255,255,0.85); border-color: rgba(0,0,0,0.15); color: #333; }
-    body.light-mode .fav-btn.active { background: rgba(29,185,84,0.95); color: white; }
-    body.light-mode .del-btn { background: rgba(220, 53, 69, 0.9); }
-    body.light-mode .toast { background: rgba(255,255,255,0.98); color: #121212; }
+    .now-playing{width:auto;flex:1}
+    .np-cover{width:44px;height:44px;border-radius:10px}
+    .np-title{font-size:12px}
+    .np-artist{font-size:10px}
+    .player-controls{flex:0}
+    .right-controls{display:none}
+    .controls-btns{gap:8px}
+    .ctrl-btn svg{width:20px;height:20px}
+    .play-pause-btn{width:42px;height:42px}
+    .play-pause-btn svg{width:18px;height:18px}
+    .side-btn{display:none}
+    #shuffleBtn,#repeatBtn{display:flex}
+
+    .progress-container{
+        position:absolute;top:0;left:0;right:0;
+        width:100%;height:12px;padding:0;
+        gap:0;display:flex;align-items:center;
+    }
+    .progress-container>span{display:none}
+    .progress-bar{
+        height:3px;border-radius:0;width:100%;
+        background:rgba(255,255,255,.08);
+    }
+    .progress-bar:hover{height:3px}
+    .progress-fill{border-radius:0}
+    .progress-fill::after{display:none}
+
+    .fab{bottom:calc(var(--player-height) + 76px);right:16px;width:52px;height:52px}
+    .yt-modal{padding:8px}
+    .splash-img,#splashSvg{width:130px;height:130px}
+    .toast{bottom:calc(64px + 80px);font-size:12px;padding:12px 18px}
+
+    .expanded-art{max-width:260px}
+    .expanded-info h1{font-size:20px}
+    .expanded-viz{height:60px}
+    .expanded-controls{gap:16px}
+    .expanded-controls .play-pause-btn{width:56px;height:56px}
+
+    .sleep-timer-menu{bottom:calc(var(--player-height) + 16px);right:12px}
+
+    .palette-overlay{padding-top:8vh;padding-left:12px;padding-right:12px}
+    .palette{max-width:100%}
+}
+
+/* ============================================================
+   REDUCED MOTION
+============================================================ */
+@media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{
+        animation-duration:.01ms!important;
+        animation-iteration-count:1!important;
+        transition-duration:.01ms!important;
+        scroll-behavior:auto!important;
+    }
+}
+
+/* ============================================================
+   FOCUS VISIBLE
+============================================================ */
+button:focus-visible,
+.progress-bar:focus-visible,
+input:focus-visible,
+.palette-item:focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:2px;
+}
 </style>
 </head>
 <body>
 
-    <!-- SPLASH SCREEN -->
-    <div id="splashScreen">
-        <div class="splash-content">
-            <img src="logo.png" alt="Dauplay Logo" class="splash-img" onerror="this.style.display='none'; document.getElementById('splashSvg').style.display='block';">
-            <svg id="splashSvg" style="display:none" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#5eead4"/>
-                        <stop offset="100%" stop-color="#1db954"/>
-                    </linearGradient>
-                </defs>
-                <rect width="200" height="200" rx="40" fill="#0a0a0a" stroke="url(#g1)" stroke-width="2"/>
-                <path d="M 60 40 L 110 40 C 150 40 170 70 170 100 C 170 130 150 160 110 160 L 60 160 Z" fill="white"/>
-                <path d="M 60 100 L 170 100 C 170 130 150 160 110 160 L 60 160 Z" fill="url(#g1)"/>
-                <path d="M 80 70 L 110 70 C 130 70 140 85 140 100 C 140 115 130 130 110 130 L 80 130 Z" fill="#0a0a0a"/>
-                <polygon points="105,85 105,115 130,100" fill="url(#g1)"/>
-                <text x="100" y="185" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="28" fill="white">Dau<tspan fill="url(#g1)">play</tspan></text>
-            </svg>
+<!-- SPLASH -->
+<div id="splashScreen">
+    <div class="splash-content">
+        <img src="logo.png" alt="Dauplay" class="splash-img" onerror="this.style.display='none';document.getElementById('splashSvg').style.display='block';">
+        <svg id="splashSvg" style="display:none" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#5eead4"/>
+                    <stop offset="100%" stop-color="#1db954"/>
+                </linearGradient>
+            </defs>
+            <rect width="200" height="200" rx="40" fill="#0a0a0a" stroke="url(#g1)" stroke-width="2"/>
+            <path d="M 60 40 L 110 40 C 150 40 170 70 170 100 C 170 130 150 160 110 160 L 60 160 Z" fill="white"/>
+            <path d="M 60 100 L 170 100 C 170 130 150 160 110 160 L 60 160 Z" fill="url(#g1)"/>
+            <path d="M 80 70 L 110 70 C 130 70 140 85 140 100 C 140 115 130 130 110 130 L 80 130 Z" fill="#0a0a0a"/>
+            <polygon points="105,85 105,115 130,100" fill="url(#g1)"/>
+            <text x="100" y="185" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="28" fill="white">Dau<tspan fill="url(#g1)">play</tspan></text>
+        </svg>
+    </div>
+    <div class="splash-loader"><div class="splash-bar"></div></div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="logo">Dau<span>play</span></div>
+    <nav class="nav-menu">
+        <div class="nav-item active" data-view="musicas">
+            <svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
+            <span>Músicas</span>
+            <span class="nav-shortcut">1</span>
         </div>
-        <div class="splash-loader"><div class="splash-bar"></div></div>
+        <div class="nav-item" data-view="favoritas">
+            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            <span>Favoritas</span>
+            <span class="nav-shortcut">2</span>
+        </div>
+        <div class="nav-item" data-view="biblia">
+            <svg viewBox="0 0 24 24"><path d="M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v16h12V4H6zm2 2h8v2H8V6zm0 4h8v2H8v-2zm0 4h5v2H8v-2z"/></svg>
+            <span>Bíblia</span>
+            <span class="nav-shortcut">3</span>
+        </div>
+        <div class="nav-item" data-view="youtube">
+            <svg viewBox="0 0 24 24"><path d="M21.58 7.19a2.5 2.5 0 0 0-1.76-1.77C18.25 5 12 5 12 5s-6.25 0-7.82.42A2.5 2.5 0 0 0 2.42 7.19 26.18 26.18 0 0 0 2 12a26.18 26.18 0 0 0 .42 4.81 2.5 2.5 0 0 0 1.76 1.77C5.75 19 12 19 12 19s6.25 0 7.82-.42a2.5 2.5 0 0 0 1.76-1.77A26.18 26.18 0 0 0 22 12a26.18 26.18 0 0 0-.42-4.81zM10 15V9l5.2 3L10 15z"/></svg>
+            <span>YouTube</span>
+            <span class="nav-shortcut">4</span>
+        </div>
+    </nav>
+    <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">☀️ Tema Claro</button>
+</aside>
+
+<!-- MAIN -->
+<main class="main-content">
+    <header class="header">
+        <h1 id="pageTitle">Músicas</h1>
+        <div class="header-actions">
+            <div class="search-box">
+                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                <input type="text" id="globalSearch" placeholder="Buscar músicas..." aria-label="Buscar">
+                <span class="kbd-hint">⌘K</span>
+            </div>
+            <button class="icon-btn" onclick="openPalette()" title="Command Palette" aria-label="Comandos">
+                <svg viewBox="0 0 24 24"><path d="M9 3H7c-1.1 0-2 .9-2 2v2c0 1.1-.9 2-2 2s2 .9 2 2v2c0 1.1.9 2 2 2h2v-2H7v-2c0-1.1-.9-2-2-2s2-.9 2-2V5h2V3zm10 6c-1.1 0-2-.9-2-2V5c0-1.1-.9-2-2-2h-2v2h2v2c0 1.1.9 2 2 2s-2 .9-2 2v2c0 1.1-.9 2-2 2h-2v2h2c1.1 0 2-.9 2-2v-2c0-1.1.9-2 2-2s-2-.9-2-2z"/></svg>
+            </button>
+            <button class="icon-btn theme-btn-mobile" id="themeToggleMobile" onclick="toggleTheme()" aria-label="Alternar tema">☀️</button>
+        </div>
+    </header>
+
+    <div class="view-container">
+        <div id="view-musicas" class="view-section active"><div class="music-grid" id="musicGrid"></div></div>
+        <div id="view-favoritas" class="view-section"><div class="music-grid" id="favGrid"></div></div>
+        <div id="view-biblia" class="view-section"><div id="bibleContainer"></div></div>
+        <div id="view-youtube" class="view-section">
+            <div class="yt-input-wrapper">
+                <input type="text" id="ytInput" placeholder="Cole o link do YouTube..." aria-label="Link do YouTube">
+                <button class="btn-add" onclick="addYoutubeLink()">Salvar</button>
+            </div>
+            <div class="yt-grid" id="ytGrid"></div>
+        </div>
     </div>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="logo">Dau<span>play</span></div>
-        <nav class="nav-menu">
-            <div class="nav-item active" data-view="musicas">
-                <svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
-                Músicas
-            </div>
-            <div class="nav-item" data-view="favoritas">
-                <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                Favoritas
-            </div>
-            <div class="nav-item" data-view="biblia">
-                <svg viewBox="0 0 24 24"><path d="M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v16h12V4H6zm2 2h8v2H8V6zm0 4h8v2H8v-2zm0 4h5v2H8v-2z"/></svg>
-                Bíblia
-            </div>
-            <div class="nav-item" data-view="youtube">
-                <svg viewBox="0 0 24 24"><path d="M21.58 7.19a2.5 2.5 0 0 0-1.76-1.77C18.25 5 12 5 12 5s-6.25 0-7.82.42A2.5 2.5 0 0 0 2.42 7.19 26.18 26.18 0 0 0 2 12a26.18 26.18 0 0 0 .42 4.81 2.5 2.5 0 0 0 1.76 1.77C5.75 19 12 19 12 19s6.25 0 7.82-.42a2.5 2.5 0 0 0 1.76-1.77A26.18 26.18 0 0 0 22 12a26.18 26.18 0 0 0-.42-4.81zM10 15V9l5.2 3L10 15z"/></svg>
-                YouTube
-            </div>
-        </nav>
-        <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">☀️ Tema Claro</button>
-    </aside>
+    <div class="fab" onclick="document.getElementById('musicUpload').click()" title="Adicionar Música" aria-label="Adicionar música">
+        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        <input type="file" id="musicUpload" accept="audio/*" multiple hidden onchange="handleMusicUpload(event)">
+    </div>
 
-    <!-- MAIN -->
-    <main class="main-content">
-        <header class="header">
-            <h1 id="pageTitle">Músicas</h1>
-            <button class="theme-btn-mobile" id="themeToggleMobile" onclick="toggleTheme()">☀️</button>
-        </header>
+    <!-- SLEEP TIMER MENU -->
+    <div class="sleep-timer-menu" id="sleepMenu">
+        <button data-sleep="0"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>Desativado</button>
+        <button data-sleep="5">5 minutos</button>
+        <button data-sleep="15">15 minutos</button>
+        <button data-sleep="30">30 minutos</button>
+        <button data-sleep="60">60 minutos</button>
+        <button data-sleep="end">Fim da faixa</button>
+    </div>
 
-        <div class="view-container">
-            <div id="view-musicas" class="view-section active">
-                <div class="music-grid" id="musicGrid"></div>
+    <!-- PLAYER BAR -->
+    <div class="player-bar">
+        <div class="now-playing" onclick="openExpanded()" title="Abrir player expandido">
+            <div class="np-cover" id="npCover">
+                <img id="npImg" src="" alt="" style="display:none;">
+                <span id="npIcon" style="display:flex;width:100%;height:100%;align-items:center;justify-content:center;font-size:22px;">🎵</span>
             </div>
-
-            <div id="view-favoritas" class="view-section">
-                <div class="music-grid" id="favGrid"></div>
-            </div>
-
-            <div id="view-biblia" class="view-section">
-                <div id="bibleContainer"></div>
-            </div>
-
-            <div id="view-youtube" class="view-section">
-                <div class="yt-input-wrapper">
-                    <input type="text" id="ytInput" placeholder="Cole o link do YouTube...">
-                    <button class="btn-add" onclick="addYoutubeLink()">Salvar</button>
-                </div>
-                <div class="yt-grid" id="ytGrid"></div>
+            <div class="np-info">
+                <div class="np-title" id="npTitle">Dauplay Pronto</div>
+                <div class="np-artist" id="npArtist">Escolha uma música para começar</div>
             </div>
         </div>
 
-        <div class="fab" onclick="document.getElementById('musicUpload').click()" title="Adicionar Música">
-            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-            <input type="file" id="musicUpload" accept="audio/*" multiple hidden onchange="handleMusicUpload(event)">
+        <div class="player-controls">
+            <div class="controls-btns">
+                <button class="ctrl-btn side-btn" id="shuffleBtn" onclick="toggleShuffle()" aria-label="Aleatório" title="Aleatório">
+                    <svg viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
+                </button>
+                <button class="ctrl-btn" onclick="prevSong()" aria-label="Anterior" title="Anterior">
+                    <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                </button>
+                <button class="ctrl-btn play-pause-btn" id="playBtn" onclick="togglePlay()" aria-label="Reproduzir" title="Play/Pause (Espaço)">
+                    <svg viewBox="0 0 24 24" id="playIcon"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+                <button class="ctrl-btn" onclick="nextSong(false)" aria-label="Próxima" title="Próxima">
+                    <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                </button>
+                <button class="ctrl-btn side-btn" id="repeatBtn" onclick="toggleRepeat()" aria-label="Repetir" title="Repetir">
+                    <svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+                </button>
+            </div>
+            <div class="progress-container">
+                <span id="currentTime">0:00</span>
+                <div class="progress-bar" id="progressBar" role="slider" tabindex="0" aria-label="Progresso" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span id="totalTime">0:00</span>
+            </div>
         </div>
 
-        <div class="player-bar">
-            <div class="now-playing">
-                <div class="np-cover" id="npCover">
-                    <img id="npImg" src="" style="display:none;">
-                    <span id="npIcon" style="display:flex;width:100%;height:100%;align-items:center;justify-content:center;font-size:20px;">🎵</span>
-                </div>
-                <div class="np-info">
-                    <div class="np-title" id="npTitle">Dauplay Pronto</div>
-                    <div class="np-artist" id="npArtist">Toque uma demo ou adicione músicas</div>
-                </div>
-            </div>
-            <div class="player-controls">
-                <div class="controls-btns">
-                    <button class="ctrl-btn side-btn" id="shuffleBtn" onclick="toggleShuffle()" title="Tocar aleatoriamente">
-                        <svg viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
-                    </button>
-
-                    <button class="ctrl-btn" onclick="prevSong()"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
-                    
-                    <button class="ctrl-btn play-pause-btn" id="playBtn" onclick="togglePlay()">
-                        <svg viewBox="0 0 24 24" id="playIcon"><path d="M8 5v14l11-7z"/></svg>
-                    </button>
-                    
-                    <button class="ctrl-btn" onclick="nextSong(false)"><svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
-
-                    <button class="ctrl-btn side-btn" id="repeatBtn" onclick="toggleRepeat()" title="Repetir">
-                        <svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
-                    </button>
-                </div>
-                <div class="progress-container">
-                    <span id="currentTime">0:00</span>
-                    <div class="progress-bar" onclick="seekAudio(event)"><div class="progress-fill" id="progressFill"></div></div>
-                    <span id="totalTime">0:00</span>
-                </div>
+        <div class="right-controls">
+            <button class="ctrl-btn" id="sleepBtn" onclick="toggleSleepMenu(event)" title="Sleep Timer" aria-label="Sleep Timer">
+                <svg viewBox="0 0 24 24"><path d="M12.34 2.02C6.59 1.82 2 6.42 2 12c0 5.52 4.48 10 10 10 3.71 0 6.93-2.02 8.66-5.02-7.51-.25-12.09-8.43-8.32-14.96z"/></svg>
+            </button>
+            <div class="volume-wrap">
+                <button class="ctrl-btn" id="volBtn" onclick="toggleMute()" aria-label="Mudo" title="Mudo (M)">
+                    <svg viewBox="0 0 24 24" id="volIcon"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                </button>
+                <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="100" aria-label="Volume" oninput="setVolume(this.value)">
             </div>
             <div class="visualizer" id="visualizer">
                 <div class="bar"></div><div class="bar"></div><div class="bar"></div>
                 <div class="bar"></div><div class="bar"></div><div class="bar"></div>
             </div>
         </div>
-    </main>
+    </div>
+</main>
 
-    <div class="yt-modal hidden" id="ytModal" onclick="if(event.target===this) closeYtPlayer()">
-        <div class="yt-modal-content">
-            <div class="yt-modal-iframe-wrap">
-                <iframe id="ytIframe" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+<!-- EXPANDED PLAYER -->
+<div class="expanded-player" id="expandedPlayer">
+    <div class="expanded-bg" id="expandedBg"></div>
+    <button class="expanded-close" onclick="closeExpanded()" aria-label="Fechar">✕</button>
+    <div class="expanded-content">
+        <div class="expanded-art" id="expandedArt">
+            <img id="expandedImg" src="" alt="">
+        </div>
+        <div class="expanded-info">
+            <h1 id="expandedTitle">Dauplay Pronto</h1>
+            <p id="expandedArtist">Escolha uma música</p>
+        </div>
+        <canvas class="expanded-viz" id="expandedViz" height="80"></canvas>
+        <div class="expanded-progress">
+            <div class="times">
+                <span id="expandedCurrent">0:00</span>
+                <span id="expandedTotal">0:00</span>
             </div>
-            <button class="yt-modal-close" onclick="closeYtPlayer()" aria-label="Fechar">✕</button>
+            <div class="bar-wrap" id="expandedBarWrap">
+                <div class="bar-fill" id="expandedBarFill"></div>
+            </div>
+        </div>
+        <div class="expanded-controls">
+            <button class="ctrl-btn side-btn" id="expandedShuffle" onclick="toggleShuffle()" aria-label="Aleatório">
+                <svg viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
+            </button>
+            <button class="ctrl-btn" onclick="prevSong()" aria-label="Anterior">
+                <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+            </button>
+            <button class="ctrl-btn play-pause-btn" id="expandedPlayBtn" onclick="togglePlay()" aria-label="Reproduzir">
+                <svg viewBox="0 0 24 24" id="expandedPlayIcon"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button class="ctrl-btn" onclick="nextSong(false)" aria-label="Próxima">
+                <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+            </button>
+            <button class="ctrl-btn side-btn" id="expandedRepeat" onclick="toggleRepeat()" aria-label="Repetir">
+                <svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+            </button>
         </div>
     </div>
+</div>
 
-    <audio id="audioPlayer"></audio>
-    <div class="toast" id="toast"></div>
+<!-- COMMAND PALETTE -->
+<div class="palette-overlay" id="paletteOverlay" onclick="if(event.target===this) closePalette()">
+    <div class="palette">
+        <div class="palette-input-wrap">
+            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input id="paletteInput" placeholder="Buscar músicas, navegar, ações..." autocomplete="off">
+            <span class="palette-kbd">ESC</span>
+        </div>
+        <div class="palette-results" id="paletteResults"></div>
+        <div class="palette-footer">
+            <span>↑↓ navegar</span>
+            <span>↵ selecionar</span>
+            <span>esc fechar</span>
+        </div>
+    </div>
+</div>
+
+<!-- YOUTUBE MODAL -->
+<div class="yt-modal hidden" id="ytModal" onclick="if(event.target===this) closeYtPlayer()">
+    <div class="yt-modal-content">
+        <div class="yt-modal-iframe-wrap">
+            <iframe id="ytIframe" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+        </div>
+        <button class="yt-modal-close" onclick="closeYtPlayer()" aria-label="Fechar">✕</button>
+    </div>
+</div>
+
+<audio id="audioPlayer" crossorigin="anonymous"></audio>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 /* ============================================================
-   1. HELPERS
+   DAUPLAY — REVOLUTION EDITION
+   Core
 ============================================================ */
 const $ = (id) => document.getElementById(id);
-const toast = (msg, type) => {
+let toastTimer = null;
+
+function toast(msg, type) {
     const el = $('toast');
     el.textContent = msg;
-    el.className = 'toast show' + (type === 'error' ? ' error' : '');
-    clearTimeout(window._toastTimer);
-    window._toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+    el.className = 'toast show' + (type ? ' ' + type : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+const fmtTime = (s) => {
+    if (!isFinite(s) || s < 0) return '0:00';
+    return `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
 };
-const fmtTime = (s) => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
 const escapeHtml = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
+async function fetchWithTimeout(url, ms = 30000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), ms);
+    try { return await fetch(url, { signal: controller.signal }); }
+    finally { clearTimeout(timer); }
+}
+
 /* ============================================================
-   2. SPLASH SCREEN TIMER
+   SPLASH
 ============================================================ */
 window.addEventListener('load', () => {
     setTimeout(() => {
         const splash = $('splashScreen');
         if (splash) {
             splash.classList.add('fade-out');
-            setTimeout(() => splash.remove(), 600);
+            setTimeout(() => splash.remove(), 700);
         }
-    }, 2000);
+    }, 1600);
 });
 
 /* ============================================================
-   3. INDEXEDDB
+   INDEXEDDB
 ============================================================ */
 const DB_NAME = 'dauplay_db';
 const DB_VERSION = 1;
@@ -689,15 +1582,16 @@ async function dbDelete(store, key) {
 }
 
 /* ============================================================
-   4. ESTADO GLOBAL
+   STATE
 ============================================================ */
 let allSongs = [];
-let currentSongIndex = -1;
-let ytLinks = JSON.parse(localStorage.getItem('dauplay_yt') || '[]');
-let favorites = new Set(JSON.parse(localStorage.getItem('dauplay_favs') || '[]'));
+let currentId = null;
+let ytLinks = [];
+let favorites = new Set();
+let recentTracks = [];
 let BIBLE_DATA = null;
-let currentBookName = null;
-let currentChapterNum = null;
+let currentBookIndex = null;
+let currentChapterIndex = 0;
 
 let isShuffle = false;
 let repeatMode = 'off';
@@ -705,28 +1599,32 @@ let repeatMode = 'off';
 let ttsPlaying = false;
 let ttsQueue = [];
 let ttsIndex = 0;
+let _voiceCache = null;
+let currentBlobURL = null;
+
+// Sleep timer
+let sleepTimerId = null;
+let sleepEndAt = null;
+let sleepMode = 'off';
+
+// Audio analysis
+let audioCtx = null;
+let analyser = null;
+let sourceNode = null;
+let vizData = null;
+let vizRAF = null;
+let expandedVizRAF = null;
 
 const audio = $('audioPlayer');
 
+function getCurrentIndex() {
+    if (!currentId) return -1;
+    return allSongs.findIndex(s => s.id === currentId);
+}
+
 /* ============================================================
-   5. NAVEGAÇÃO + TEMA
+   THEME
 ============================================================ */
-document.querySelectorAll('.nav-item').forEach(item => {
-    item.addEventListener('click', () => {
-        const view = item.dataset.view;
-        if (view !== 'biblia' && ttsPlaying) stopTTS();
-        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        item.classList.add('active');
-        document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-        $('view-' + view).classList.add('active');
-        $('pageTitle').textContent = item.textContent.trim();
-
-        if (view === 'biblia') initBibleView();
-        if (view === 'youtube') renderYoutube();
-        if (view === 'favoritas') renderFavorites();
-    });
-});
-
 function toggleTheme() {
     document.body.classList.toggle('light-mode');
     const isLight = document.body.classList.contains('light-mode');
@@ -741,35 +1639,70 @@ if (localStorage.getItem('dauplay_theme') === 'light') {
 }
 
 /* ============================================================
-   6. FAVORITAS
+   DYNAMIC COLOR EXTRACTION
 ============================================================ */
-function toggleFavorite(songId, event) {
-    if (event) event.stopPropagation();
-    if (favorites.has(songId)) {
-        favorites.delete(songId);
-        toast('Removida das favoritas');
-    } else {
-        favorites.add(songId);
-        toast('Adicionada às favoritas ❤️');
-    }
-    localStorage.setItem('dauplay_favs', JSON.stringify([...favorites]));
-    renderSongs();
-    renderFavorites();
+function setDynamicColor(r, g, b) {
+    document.documentElement.style.setProperty('--dyn', `${r},${g},${b}`);
+    // Secondary color: slightly shifted hue
+    document.documentElement.style.setProperty('--dyn-2', `${Math.min(255, (b+r)/2|0)},${Math.min(255,(r+g)/2|0)},${Math.min(255,(g+b)/2|0)}`);
 }
 
-function renderFavorites() {
-    const grid = $('favGrid');
-    if (!grid) return;
-    const favSongs = allSongs.filter(s => favorites.has(s.id));
-    if (favSongs.length === 0) {
-        grid.innerHTML = `<div class="empty-state"><div class="emoji">💚</div><p>Nenhuma música favoritada ainda.<br>Toque no 🤍 de uma música para adicionar aqui.</p></div>`;
-        return;
-    }
-    renderSongsGrid(grid, favSongs);
+function extractColorFromImage(imgSrc) {
+    return new Promise((resolve) => {
+        if (!imgSrc) { resolve([29,185,84]); return; }
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+            try {
+                const c = document.createElement('canvas');
+                c.width = c.height = 32;
+                const ctx = c.getContext('2d');
+                ctx.drawImage(img, 0, 0, 32, 32);
+                const data = ctx.getImageData(0, 0, 32, 32).data;
+                let r = 0, g = 0, b = 0, count = 0;
+                for (let i = 0; i < data.length; i += 16) {
+                    const pr = data[i], pg = data[i+1], pb = data[i+2];
+                    // Skip very dark/light pixels
+                    const lum = (pr + pg + pb) / 3;
+                    if (lum < 25 || lum > 230) continue;
+                    r += pr; g += pg; b += pb; count++;
+                }
+                if (count === 0) { resolve([29,185,84]); return; }
+                // Boost saturation
+                r = r/count|0; g = g/count|0; b = b/count|0;
+                const max = Math.max(r,g,b), min = Math.min(r,g,b);
+                const boost = 1.4;
+                r = Math.min(255, (r + (r - (max+min)/2) * boost)|0);
+                g = Math.min(255, (g + (g - (max+min)/2) * boost)|0);
+                b = Math.min(255, (b + (b - (max+min)/2) * boost)|0);
+                resolve([Math.max(r,20), Math.max(g,20), Math.max(b,20)]);
+            } catch { resolve([29,185,84]); }
+        };
+        img.onerror = () => resolve([29,185,84]);
+        img.src = imgSrc;
+    });
 }
 
 /* ============================================================
-   7. MÚSICAS E CONTROLES
+   NAV
+============================================================ */
+document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+        const view = item.dataset.view;
+        if (view !== 'biblia' && ttsPlaying) stopTTS();
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+        $('view-' + view).classList.add('active');
+        $('pageTitle').textContent = item.querySelector('span').textContent.trim();
+        if (view === 'biblia') initBibleView();
+        if (view === 'youtube') renderYoutube();
+        if (view === 'favoritas') renderFavorites();
+    });
+});
+
+/* ============================================================
+   MUSIC
 ============================================================ */
 const DEMO_SONGS = [
     { id: 'demo1', title: 'Acoustic Breeze', artist: 'Dauplay Demo', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', cover: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&h=400&fit=crop' },
@@ -778,54 +1711,111 @@ const DEMO_SONGS = [
 ];
 
 async function loadSongs() {
-    const saved = JSON.parse(localStorage.getItem('dauplay_songs') || 'null');
-    allSongs = (saved && saved.length) ? saved : [...DEMO_SONGS];
+    const savedStr = localStorage.getItem('dauplay_songs');
+    if (savedStr === null) {
+        allSongs = [...DEMO_SONGS];
+    } else {
+        try {
+            const parsed = JSON.parse(savedStr);
+            allSongs = Array.isArray(parsed) ? parsed : [];
+        } catch { allSongs = []; }
+    }
     renderSongs();
+}
+
+function persistSongs() {
+    const meta = allSongs.map(s => ({
+        id: s.id, title: s.title, artist: s.artist,
+        local: s.local || false, cover: s.cover || null,
+        url: s.local ? null : s.url
+    }));
+    localStorage.setItem('dauplay_songs', JSON.stringify(meta));
+}
+function persistFavs() {
+    localStorage.setItem('dauplay_favs', JSON.stringify([...favorites]));
 }
 
 function renderSongs() {
     renderSongsGrid($('musicGrid'), allSongs);
-    if ($('favGrid')) renderFavorites();
+    renderFavorites();
+}
+
+function renderFavorites() {
+    const grid = $('favGrid');
+    if (!grid) return;
+    const favSongs = allSongs.filter(s => favorites.has(s.id));
+    if (favSongs.length === 0) {
+        grid.innerHTML = `<div class="empty-state"><div class="emoji">💚</div><p>Nenhuma música favoritada ainda.<br>Toque no 🤍 para adicionar aqui.</p></div>`;
+        return;
+    }
+    renderSongsGrid(grid, favSongs);
 }
 
 function renderSongsGrid(gridEl, songsArray) {
-    gridEl.innerHTML = '';
     if (songsArray.length === 0) {
-        gridEl.innerHTML = `<div class="empty-state"><div class="emoji">🎵</div><p>Nenhuma música aqui.</p></div>`;
+        gridEl.innerHTML = `<div class="empty-state"><div class="emoji">🎵</div><p>Nenhuma música aqui.<br>Toque no + para adicionar músicas.</p></div>`;
         return;
     }
-    songsArray.forEach(song => {
-        const globalIndex = allSongs.findIndex(s => s.id === song.id);
-        if (globalIndex < 0) return;
+    gridEl.innerHTML = songsArray.map(song => {
         const isFav = favorites.has(song.id);
-        const isCurrent = globalIndex === currentSongIndex;
+        const isCurrent = song.id === currentId;
         const cover = song.cover || 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop';
-        const card = document.createElement('div');
-        card.className = 'music-card' + (isCurrent ? ' active' : '');
-        card.onclick = () => playSong(globalIndex);
-        card.innerHTML = `
-            <div class="card-img-wrapper"><img src="${cover}" alt=""></div>
-            
-            <button class="del-btn" onclick="deleteMusic('${song.id}', event)" title="Excluir Música">
-                <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-            </button>
-
-            <button class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite('${song.id}', event)" title="${isFav ? 'Remover' : 'Favoritar'}">
-                ${isFav ? '❤️' : '🤍'}
-            </button>
-            
-            <div class="card-title">${escapeHtml(song.title)}</div>
-            <div class="card-artist">${escapeHtml(song.artist || 'Desconhecido')}</div>
+        return `
+            <div class="music-card ${isCurrent ? 'active' : ''}" data-song-id="${escapeHtml(song.id)}">
+                <div class="card-img-wrapper"><img src="${escapeHtml(cover)}" alt="" loading="lazy"></div>
+                <button class="del-btn" data-action="delete" aria-label="Excluir" title="Excluir">
+                    <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                </button>
+                <button class="fav-btn ${isFav ? 'active' : ''}" data-action="fav" aria-label="${isFav ? 'Remover' : 'Favoritar'}">
+                    ${isFav ? '❤️' : '🤍'}
+                </button>
+                <div class="card-title">${escapeHtml(song.title)}</div>
+                <div class="card-artist">${escapeHtml(song.artist || 'Desconhecido')}</div>
+            </div>
         `;
-        gridEl.appendChild(card);
+    }).join('');
+    // Attach 3D tilt
+    gridEl.querySelectorAll('.music-card').forEach(attachTilt);
+}
+
+function attachTilt(card) {
+    card.addEventListener('mousemove', (e) => {
+        if (window.matchMedia('(max-width:768px)').matches) return;
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        card.style.transform = `perspective(900px) rotateX(${-y*6}deg) rotateY(${x*6}deg) translateY(-6px) scale(1.02)`;
+    });
+    card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
     });
 }
 
-async function playSong(index) {
-    if (index < 0 || index >= allSongs.length) return;
+function setupGridDelegation(gridEl) {
+    gridEl.addEventListener('click', (e) => {
+        const card = e.target.closest('.music-card');
+        if (!card) return;
+        const songId = card.dataset.songId;
+        if (!songId) return;
+        const actionEl = e.target.closest('[data-action]');
+        if (actionEl?.dataset.action === 'fav') { e.stopPropagation(); toggleFavorite(songId); return; }
+        if (actionEl?.dataset.action === 'delete') { e.stopPropagation(); deleteMusic(songId); return; }
+        playSong(songId);
+    });
+}
+
+function updateActiveCard() {
+    document.querySelectorAll('.music-card').forEach(card => {
+        card.classList.toggle('active', card.dataset.songId === currentId);
+    });
+}
+
+async function playSong(songId) {
+    const idx = allSongs.findIndex(s => s.id === songId);
+    if (idx < 0) return;
     if (ttsPlaying) stopTTS();
-    currentSongIndex = index;
-    const song = allSongs[index];
+    currentId = songId;
+    const song = allSongs[idx];
 
     let audioUrl = song.url;
     if (!audioUrl && song.local) {
@@ -834,16 +1824,25 @@ async function playSong(index) {
             if (blob) audioUrl = URL.createObjectURL(blob);
         } catch (e) { console.error(e); }
     }
-    if (!audioUrl) { toast('Arquivo de áudio não encontrado.', 'error'); return; }
+    if (!audioUrl) { toast('Arquivo não encontrado.', 'error'); return; }
 
-    if (window._currentBlobURL) URL.revokeObjectURL(window._currentBlobURL);
-    window._currentBlobURL = song.local ? audioUrl : null;
+    if (currentBlobURL) URL.revokeObjectURL(currentBlobURL);
+    currentBlobURL = song.local ? audioUrl : null;
+
+    // Setup audio analysis on first play
+    setupAudioAnalysis();
 
     audio.src = audioUrl;
-    audio.play().catch(e => { console.error(e); toast('Não foi possível reproduzir.', 'error'); });
+    audio.play().catch(e => {
+        console.error(e);
+        if (e.name === 'NotAllowedError') toast('Clique em Play para iniciar.', 'error');
+        else toast('Erro ao reproduzir.', 'error');
+    });
 
+    // Update UI
     $('npTitle').textContent = song.title;
     $('npArtist').textContent = song.artist || 'Desconhecido';
+    const coverUrl = song.cover || 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop';
 
     if (song.cover) {
         $('npImg').src = song.cover;
@@ -854,74 +1853,161 @@ async function playSong(index) {
         $('npIcon').style.display = 'flex';
     }
 
+    // Expanded player
+    $('expandedImg').src = coverUrl;
+    $('expandedBg').style.backgroundImage = `url('${coverUrl}')`;
+    $('expandedTitle').textContent = song.title;
+    $('expandedArtist').textContent = song.artist || 'Desconhecido';
+
+    // Extract dynamic color from cover
+    extractColorFromImage(coverUrl).then(([r,g,b]) => setDynamicColor(r,g,b));
+
     updatePlayUI(true);
-    renderSongs();
+    updateActiveCard();
     $('visualizer').classList.add('playing');
     $('npCover').classList.add('playing');
+    $('expandedArt').classList.add('playing');
+
+    // Media Session
+    updateMediaSession(song);
+
+    // Recent tracks
+    addToRecent(song);
+
+    // Sleep timer end-of-track
+    if (sleepMode === 'end') {
+        sleepMode = 'off';
+        updateSleepUI();
+    }
 }
 
-async function deleteMusic(id, event) {
-    if (event) event.stopPropagation();
+function addToRecent(song) {
+    recentTracks = recentTracks.filter(r => r.id !== song.id);
+    recentTracks.unshift({ id: song.id, title: song.title, artist: song.artist, cover: song.cover });
+    recentTracks = recentTracks.slice(0, 8);
+    localStorage.setItem('dauplay_recent', JSON.stringify(recentTracks));
+}
+
+function updateMediaSession(song) {
+    if (!('mediaSession' in navigator)) return;
+    try {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: song.title,
+            artist: song.artist || 'Desconhecido',
+            album: 'Dauplay',
+            artwork: [
+                { src: song.cover || '', sizes: '512x512', type: 'image/jpeg' }
+            ]
+        });
+    } catch {}
+}
+
+async function deleteMusic(songId) {
     if (!confirm('Tem certeza que deseja excluir esta música?')) return;
+    try { await dbDelete('music', songId); } catch (e) { console.error(e); }
 
-    try { await dbDelete('music', id); } catch (e) { console.error(e); }
+    const wasCurrent = currentId === songId;
+    allSongs = allSongs.filter(s => s.id !== songId);
+    favorites.delete(songId);
+    persistFavs();
+    persistSongs();
 
-    allSongs = allSongs.filter(s => s.id !== id);
-    favorites.delete(id);
-    
-    localStorage.setItem('dauplay_favs', JSON.stringify([...favorites]));
-    const meta = allSongs.map(s => ({
-        id: s.id, title: s.title, artist: s.artist,
-        local: s.local || false, cover: s.cover || null,
-        url: s.local ? null : s.url
-    }));
-    localStorage.setItem('dauplay_songs', JSON.stringify(meta));
-
-    const songWasPlaying = currentSongIndex !== -1 && !allSongs[currentSongIndex];
-    if (songWasPlaying || (allSongs.length === 0)) {
-        audio.pause();
-        audio.src = '';
-        currentSongIndex = -1;
+    if (wasCurrent) {
+        stopPlayback();
+        currentId = null;
         $('npTitle').textContent = 'Nada tocando';
         $('npArtist').textContent = 'Selecione uma música';
         $('npImg').style.display = 'none';
         $('npIcon').style.display = 'flex';
-        updatePlayUI(false);
-        $('visualizer').classList.remove('playing');
-        $('npCover').classList.remove('playing');
-    } else if (currentSongIndex > allSongs.length - 1) {
-        currentSongIndex = allSongs.length - 1;
+        if (currentBlobURL) { URL.revokeObjectURL(currentBlobURL); currentBlobURL = null; }
+        audio.src = '';
+        $('progressFill').style.width = '0%';
+        $('currentTime').textContent = '0:00';
+        $('totalTime').textContent = '0:00';
     }
 
     renderSongs();
     toast('Música excluída!', 'success');
 }
 
+function toggleFavorite(songId) {
+    if (favorites.has(songId)) {
+        favorites.delete(songId);
+        toast('Removida das favoritas');
+    } else {
+        favorites.add(songId);
+        toast('Adicionada às favoritas ❤️', 'success');
+    }
+    persistFavs();
+    renderSongs();
+}
+
+async function handleMusicUpload(event) {
+    const files = Array.from(event.target.files);
+    if (!files.length) return;
+    toast(`Enviando ${files.length} música(s)...`);
+    let success = 0, fail = 0;
+    for (const file of files) {
+        const id = 'local_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+        const song = { id, title: file.name.replace(/\.[^/.]+$/, ''), artist: 'Minha Biblioteca', local: true, cover: null };
+        try {
+            await dbPut('music', id, file);
+            allSongs.push(song);
+            success++;
+        } catch (e) { console.error(e); fail++; }
+    }
+    persistSongs();
+    renderSongs();
+    if (success > 0 && fail === 0) toast(`${success} música(s) adicionada(s)!`, 'success');
+    else if (success > 0) toast(`${success} adicionada(s), ${fail} falhou(aram).`);
+    else toast(`Falha ao adicionar ${fail} música(s).`, 'error');
+    event.target.value = '';
+}
+
+/* ============================================================
+   PLAYER
+============================================================ */
 function togglePlay() {
-    if (!audio.src) { if (allSongs.length) playSong(0); return; }
+    if (!audio.src) {
+        if (allSongs.length) playSong(allSongs[0].id);
+        return;
+    }
     if (audio.paused) {
-        audio.play();
+        audio.play().catch(e => toast('Erro ao reproduzir', 'error'));
         updatePlayUI(true);
         $('visualizer').classList.add('playing');
         $('npCover').classList.add('playing');
+        $('expandedArt').classList.add('playing');
     } else {
         audio.pause();
-        updatePlayUI(false);
-        $('visualizer').classList.remove('playing');
-        $('npCover').classList.remove('playing');
     }
 }
 
 function updatePlayUI(isPlaying) {
-    $('playBtn').classList.toggle('playing', isPlaying);
-    $('playIcon').innerHTML = isPlaying
+    const btns = [$('playBtn'), $('expandedPlayBtn')];
+    const icons = [$('playIcon'), $('expandedPlayIcon')];
+    btns.forEach(btn => {
+        btn.classList.toggle('playing', isPlaying);
+        btn.setAttribute('aria-label', isPlaying ? 'Pausar' : 'Reproduzir');
+    });
+    const svg = isPlaying
         ? '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'
         : '<path d="M8 5v14l11-7z"/>';
+    icons.forEach(i => i.innerHTML = svg);
+}
+
+function stopPlayback() {
+    audio.pause();
+    updatePlayUI(false);
+    $('visualizer').classList.remove('playing');
+    $('npCover').classList.remove('playing');
+    $('expandedArt').classList.remove('playing');
 }
 
 function toggleShuffle() {
     isShuffle = !isShuffle;
     $('shuffleBtn').classList.toggle('active', isShuffle);
+    $('expandedShuffle').classList.toggle('active', isShuffle);
     toast(isShuffle ? 'Modo aleatório ativado' : 'Modo aleatório desativado');
 }
 
@@ -929,58 +2015,118 @@ function toggleRepeat() {
     if (repeatMode === 'off') { repeatMode = 'all'; toast('Repetir tudo'); }
     else if (repeatMode === 'all') { repeatMode = 'one'; toast('Repetir música atual'); }
     else { repeatMode = 'off'; toast('Repetição desativada'); }
-    
-    const btn = $('repeatBtn');
-    btn.classList.toggle('active', repeatMode !== 'off');
-    if (repeatMode === 'one') {
-        btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4zm-2-9h-1v4h1v-4zm-2 1h-1v2h1v-2z"/></svg>`;
-    } else {
-        btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>`;
-    }
+    const btns = [$('repeatBtn'), $('expandedRepeat')];
+    btns.forEach(btn => btn.classList.toggle('active', repeatMode !== 'off'));
+    const svgOne = `<svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4zm-2-9h-1v4h1v-4zm-2 1h-1v2h1v-2z"/></svg>`;
+    const svgAll = `<svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>`;
+    btns.forEach(btn => btn.innerHTML = repeatMode === 'one' ? svgOne : svgAll);
 }
 
 function nextSong(auto = false) {
     if (allSongs.length === 0) return;
     if (auto && repeatMode === 'one') { audio.currentTime = 0; audio.play(); return; }
-
-    if (isShuffle) {
-        let nextIndex = currentSongIndex;
-        if (allSongs.length > 1) {
-            while (nextIndex === currentSongIndex) nextIndex = Math.floor(Math.random() * allSongs.length);
-        }
-        playSong(nextIndex);
-    } else {
-        let nextIndex = currentSongIndex + 1;
-        if (nextIndex >= allSongs.length) {
-            if (repeatMode === 'all' || !auto) nextIndex = 0;
-            else { audio.pause(); return; }
-        }
-        playSong(nextIndex);
+    // Sleep timer end-of-track
+    if (auto && sleepMode === 'end') {
+        audio.pause();
+        sleepMode = 'off';
+        updateSleepUI();
+        toast('🌙 Sleep Timer: reprodução pausada');
+        return;
     }
+    const idx = getCurrentIndex();
+    if (isShuffle) {
+        let nextIdx;
+        if (allSongs.length > 1) {
+            do { nextIdx = Math.floor(Math.random() * allSongs.length); } while (nextIdx === idx);
+        } else nextIdx = 0;
+        playSong(allSongs[nextIdx].id);
+        return;
+    }
+    let nextIdx = idx + 1;
+    if (nextIdx >= allSongs.length) {
+        if (repeatMode === 'all' || !auto) nextIdx = 0;
+        else { stopPlayback(); return; }
+    }
+    playSong(allSongs[nextIdx].id);
 }
 
 function prevSong() {
     if (allSongs.length === 0) return;
     if (audio.currentTime > 3) { audio.currentTime = 0; return; }
+    const idx = getCurrentIndex();
     if (isShuffle) {
-        let prevIndex = currentSongIndex;
+        let prevIdx;
         if (allSongs.length > 1) {
-            while (prevIndex === currentSongIndex) prevIndex = Math.floor(Math.random() * allSongs.length);
-        }
-        playSong(prevIndex);
-    } else {
-        let prevIndex = currentSongIndex - 1;
-        if (prevIndex < 0) prevIndex = allSongs.length - 1;
-        playSong(prevIndex);
+            do { prevIdx = Math.floor(Math.random() * allSongs.length); } while (prevIdx === idx);
+        } else prevIdx = 0;
+        playSong(allSongs[prevIdx].id);
+        return;
+    }
+    let prevIdx = idx - 1;
+    if (prevIdx < 0) prevIdx = allSongs.length - 1;
+    playSong(allSongs[prevIdx].id);
+}
+
+/* ============================================================
+   AUDIO ANALYSIS (Real visualizer)
+============================================================ */
+function setupAudioAnalysis() {
+    if (audioCtx) return;
+    try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        sourceNode = audioCtx.createMediaElementSource(audio);
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 128;
+        analyser.smoothingTimeConstant = 0.8;
+        sourceNode.connect(analyser);
+        analyser.connect(audioCtx.destination);
+        vizData = new Uint8Array(analyser.frequencyBinCount);
+    } catch (e) {
+        console.warn('Audio analysis unavailable:', e);
     }
 }
 
+function startVisualizer() {
+    if (!analyser) return;
+    const bars = document.querySelectorAll('#visualizer .bar');
+    function draw() {
+        analyser.getByteFrequencyData(vizData);
+        const step = Math.floor(vizData.length / bars.length);
+        bars.forEach((bar, i) => {
+            const v = vizData[i * step] / 255;
+            bar.style.height = (2 + v * 30) + 'px';
+        });
+        vizRAF = requestAnimationFrame(draw);
+    }
+    draw();
+}
+
+function stopVisualizer() {
+    if (vizRAF) { cancelAnimationFrame(vizRAF); vizRAF = null; }
+    document.querySelectorAll('#visualizer .bar').forEach(b => b.style.height = '2px');
+}
+
+/* ============================================================
+   AUDIO EVENTS
+============================================================ */
 audio.addEventListener('timeupdate', () => {
     if (audio.duration && isFinite(audio.duration)) {
         const pct = (audio.currentTime / audio.duration) * 100;
         $('progressFill').style.width = pct + '%';
         $('currentTime').textContent = fmtTime(audio.currentTime);
         $('totalTime').textContent = fmtTime(audio.duration);
+        $('progressBar').setAttribute('aria-valuenow', Math.round(pct));
+        // Expanded
+        $('expandedBarFill').style.width = pct + '%';
+        $('expandedCurrent').textContent = fmtTime(audio.currentTime);
+        $('expandedTotal').textContent = fmtTime(audio.duration);
+    }
+});
+audio.addEventListener('loadedmetadata', () => {
+    if (audio.duration && isFinite(audio.duration)) {
+        $('totalTime').textContent = fmtTime(audio.duration);
+        $('expandedTotal').textContent = fmtTime(audio.duration);
+        $('progressBar').setAttribute('aria-valuemax', Math.round(audio.duration));
     }
 });
 audio.addEventListener('ended', () => nextSong(true));
@@ -989,56 +2135,128 @@ audio.addEventListener('pause', () => {
         updatePlayUI(false);
         $('visualizer').classList.remove('playing');
         $('npCover').classList.remove('playing');
+        $('expandedArt').classList.remove('playing');
     }
 });
-
-function seekAudio(e) {
-    if (!audio.duration) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    audio.currentTime = ((e.clientX - rect.left) / rect.width) * audio.duration;
-}
-
-async function handleMusicUpload(event) {
-    const files = Array.from(event.target.files);
-    if (!files.length) return;
-    toast(`Enviando ${files.length} música(s)...`);
-    for (const file of files) {
-        const id = 'local_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
-        const song = { id, title: file.name.replace(/\.[^/.]+$/, ''), artist: 'Minha Biblioteca', local: true, cover: null };
-        try {
-            await dbPut('music', id, file);
-            allSongs.push(song);
-        } catch (e) {
-            console.error(e);
-            toast('Erro ao salvar: ' + file.name, 'error');
-        }
+audio.addEventListener('play', () => {
+    if (!vizRAF) startVisualizer();
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    updatePlayUI(true);
+});
+audio.addEventListener('error', () => {
+    const err = audio.error;
+    let msg = 'Não foi possível reproduzir.';
+    if (err) {
+        if (err.code === err.MEDIA_ERR_NETWORK) msg = 'Erro de rede.';
+        else if (err.code === err.MEDIA_ERR_DECODE) msg = 'Arquivo corrompido.';
+        else if (err.code === err.MEDIA_ERR_SRC_NOT_SUPPORTED) msg = 'Formato não suportado.';
     }
-    const meta = allSongs.map(s => ({
-        id: s.id, title: s.title, artist: s.artist,
-        local: s.local || false, cover: s.cover || null,
-        url: s.local ? null : s.url
-    }));
-    localStorage.setItem('dauplay_songs', JSON.stringify(meta));
-    renderSongs();
-    toast(`${files.length} música(s) adicionada(s)!`, 'success');
-    event.target.value = '';
+    toast(msg, 'error');
+    stopPlayback();
+});
+
+/* Media Session action handlers */
+if ('mediaSession' in navigator) {
+    try {
+        navigator.mediaSession.setActionHandler('play', () => togglePlay());
+        navigator.mediaSession.setActionHandler('pause', () => togglePlay());
+        navigator.mediaSession.setActionHandler('previoustrack', () => prevSong());
+        navigator.mediaSession.setActionHandler('nexttrack', () => nextSong(false));
+    } catch {}
 }
 
 /* ============================================================
-   8. BÍBLIA + TTS (CORRIGIDO PARA MOBILE)
+   PROGRESS BAR
 ============================================================ */
-async function initBibleView() {
-    if (!BIBLE_DATA) {
-        try {
-            const saved = await dbGet('bible', 'full');
-            if (saved) BIBLE_DATA = saved;
-        } catch (e) { console.error(e); }
+function setupProgressBar() {
+    const bar = $('progressBar');
+    let dragging = false;
+    function seek(e) {
+        if (!audio.duration || !isFinite(audio.duration)) return;
+        const rect = bar.getBoundingClientRect();
+        const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        audio.currentTime = pct * audio.duration;
     }
-    if (BIBLE_DATA && Array.isArray(BIBLE_DATA) && BIBLE_DATA.length > 0) {
-        renderBibleLayout();
+    bar.addEventListener('pointerdown', (e) => {
+        dragging = true;
+        try { bar.setPointerCapture(e.pointerId); } catch {}
+        seek(e);
+    });
+    bar.addEventListener('pointermove', (e) => { if (dragging) seek(e); });
+    bar.addEventListener('pointerup', (e) => {
+        dragging = false;
+        try { bar.releasePointerCapture(e.pointerId); } catch {}
+    });
+    bar.addEventListener('keydown', (e) => {
+        if (!audio.duration) return;
+        if (e.key === 'ArrowRight') { audio.currentTime = Math.min(audio.duration, audio.currentTime + 5); e.preventDefault(); }
+        else if (e.key === 'ArrowLeft') { audio.currentTime = Math.max(0, audio.currentTime - 5); e.preventDefault(); }
+        else if (e.key === 'Home') { audio.currentTime = 0; e.preventDefault(); }
+        else if (e.key === 'End') { audio.currentTime = audio.duration; e.preventDefault(); }
+    });
+
+    // Expanded progress bar
+    const expBar = $('expandedBarWrap');
+    if (expBar) {
+        expBar.addEventListener('click', (e) => {
+            if (!audio.duration) return;
+            const rect = expBar.getBoundingClientRect();
+            const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+            audio.currentTime = pct * audio.duration;
+        });
+    }
+}
+
+/* ============================================================
+   VOLUME
+============================================================ */
+function setVolume(v) {
+    audio.volume = v / 100;
+    audio.muted = false;
+    localStorage.setItem('dauplay_volume', audio.volume);
+    $('volumeSlider').value = v;
+    updateVolIcon();
+}
+function toggleMute() {
+    audio.muted = !audio.muted;
+    updateVolIcon();
+}
+function updateVolIcon() {
+    const icon = $('volIcon');
+    if (audio.muted || audio.volume === 0) {
+        icon.innerHTML = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
+    } else if (audio.volume < 0.5) {
+        icon.innerHTML = '<path d="M18.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM5 9v6h4l5 5V4L9 9H5z"/>';
     } else {
-        renderBibleDownload();
+        icon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
     }
+}
+function initVolume() {
+    const savedVol = parseFloat(localStorage.getItem('dauplay_volume') ?? '1');
+    audio.volume = isNaN(savedVol) ? 1 : savedVol;
+    $('volumeSlider').value = Math.round(audio.volume * 100);
+    updateVolIcon();
+}
+
+/* ============================================================
+   BIBLE
+============================================================ */
+const BIBLE_URLS = [
+    'https://cdn.jsdelivr.net/gh/thiagobodruk/bible@master/json/pt_aa.json',
+    'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://raw.githubusercontent.com/thiagobodruk/bible/master/json/pt_aa.json')
+];
+
+async function initBibleView() {
+    if (BIBLE_DATA) { renderBibleLayout(); return; }
+    try {
+        const stored = await dbGet('bible', 'full');
+        if (stored) {
+            BIBLE_DATA = stored;
+            renderBibleLayout();
+            return;
+        }
+    } catch (e) { console.error(e); }
+    renderBibleDownload();
 }
 
 function renderBibleDownload() {
@@ -1046,10 +2264,9 @@ function renderBibleDownload() {
         <div class="bible-download-card">
             <div class="icon">📖</div>
             <h2>Bíblia Sagrada</h2>
-            <p>Baixe a <strong>Tradução Brasileira (TB)</strong> completa com os 66 livros para ler offline. Será salva no seu aparelho.</p>
-            <button class="btn-download" id="downloadBibleBtn" onclick="downloadFullBible()">📥 Baixar Bíblia Completa</button>
+            <p>Baixe a Bíblia completa para leitura offline com síntese de voz integrada.</p>
+            <button class="btn-download" id="downloadBibleBtn" onclick="downloadFullBible()">Baixar Bíblia</button>
             <div class="status" id="bibleStatus"></div>
-            <p style="font-size: 12px; margin-top: 8px; color: var(--text-muted);">Fonte: thiagobodruk/bible (domínio público)</p>
         </div>
     `;
 }
@@ -1057,47 +2274,38 @@ function renderBibleDownload() {
 async function downloadFullBible() {
     const btn = $('downloadBibleBtn');
     const status = $('bibleStatus');
-    if (btn) { btn.disabled = true; btn.textContent = '⏳ Baixando... aguarde'; }
-    if (status) { status.className = 'status'; status.textContent = 'Conectando ao servidor...'; }
+    if (btn) { btn.disabled = true; btn.textContent = 'Baixando...'; }
+    if (status) { status.textContent = 'Conectando...'; status.className = 'status'; }
 
-    const directUrl = 'https://raw.githubusercontent.com/thiagobodruk/bible/master/json/pt_tb.json';
-    const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(directUrl);
-    let data = null, lastError = null;
-
-    for (const url of [directUrl, proxyUrl]) {
+    let lastError = null;
+    for (const url of BIBLE_URLS) {
         try {
-            if (status) status.textContent = 'Baixando dados da Bíblia...';
-            const res = await fetch(url);
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            data = await res.json();
-            break;
-        } catch (e) { console.warn('Falha em', url, e); lastError = e; }
+            if (status) status.textContent = 'Baixando dados...';
+            const res = await fetchWithTimeout(url, 60000);
+            if (!res.ok) { lastError = new Error('HTTP ' + res.status); continue; }
+            const text = await res.text();
+            if (status) status.textContent = 'Processando...';
+            const data = JSON.parse(text);
+            if (!Array.isArray(data) || data.length === 0) throw new Error('Formato inválido');
+            await dbPut('bible', 'full', data);
+            BIBLE_DATA = data;
+            toast('Bíblia baixada!', 'success');
+            renderBibleLayout();
+            return;
+        } catch (e) {
+            console.warn('Falhou:', url, e);
+            lastError = e;
+        }
     }
 
-    if (!data) {
-        if (status) { status.className = 'status error'; status.textContent = 'Falha no download. Verifique a internet.'; }
-        if (btn) { btn.disabled = false; btn.textContent = '📥 Tentar novamente'; }
-        console.error(lastError);
-        return;
+    if (status) {
+        status.textContent = lastError?.name === 'AbortError'
+            ? 'Tempo esgotado. Verifique sua conexão.'
+            : 'Falha no download. Tente novamente.';
+        status.className = 'status error';
     }
-    if (!Array.isArray(data) || data.length === 0 || !data[0].chapters) {
-        if (status) { status.className = 'status error'; status.textContent = 'Formato inválido.'; }
-        if (btn) { btn.disabled = false; btn.textContent = '📥 Tentar novamente'; }
-        return;
-    }
-
-    if (status) status.textContent = 'Salvando no aparelho...';
-    try {
-        await dbPut('bible', 'full', data);
-        BIBLE_DATA = data;
-        if (status) { status.className = 'status success'; status.textContent = '✓ Bíblia salva!'; }
-        toast('Bíblia baixada! Agora você pode ler offline.', 'success');
-        setTimeout(() => renderBibleLayout(), 400);
-    } catch (e) {
-        console.error(e);
-        if (status) { status.className = 'status error'; status.textContent = 'Erro ao salvar.'; }
-        if (btn) { btn.disabled = false; btn.textContent = '📥 Tentar novamente'; }
-    }
+    if (btn) { btn.disabled = false; btn.textContent = 'Baixar Bíblia'; }
+    toast('Não foi possível baixar.', 'error');
 }
 
 function renderBibleLayout() {
@@ -1105,175 +2313,193 @@ function renderBibleLayout() {
         <div class="bible-layout">
             <div class="bible-sidebar" id="bibleBooks"></div>
             <div class="bible-reader">
+                <div class="tts-bar">
+                    <button class="tts-btn" id="ttsBtn" onclick="toggleTTS()">🔊 Ouvir Capítulo</button>
+                    <button class="tts-btn" onclick="stopTTS(true)">⏹ Parar</button>
+                </div>
                 <div class="chapter-selector" id="bibleChapters"></div>
-                <div class="tts-bar" id="ttsBar" style="display:none;">
-                    <button class="tts-btn" id="ttsBtn" onclick="toggleTTS()">🔊 Ouvir capítulo</button>
-                </div>
-                <div class="bible-text-content" id="bibleVerses">
-                    <p style="color: var(--text-muted); font-family: 'Inter', sans-serif;">Selecione um livro para começar.</p>
-                </div>
+                <div class="bible-text-content" id="bibleVerses"></div>
             </div>
         </div>
     `;
+    if (currentBookIndex === null && BIBLE_DATA.length > 0) {
+        currentBookIndex = 0;
+        currentChapterIndex = 0;
+    }
     renderBibleBooks();
+    renderBibleChapters();
+    renderBibleVerses();
 }
 
 function renderBibleBooks() {
-    const sidebar = $('bibleBooks');
-    if (!sidebar || !BIBLE_DATA) return;
-    sidebar.innerHTML = '';
-    BIBLE_DATA.forEach((book, idx) => {
-        const name = book.name || book.book || book.abbrev || 'Livro ' + (idx + 1);
-        const btn = document.createElement('button');
-        btn.className = 'bible-book-btn';
-        btn.textContent = name;
-        btn.onclick = () => {
-            if (ttsPlaying) stopTTS();
-            sidebar.querySelectorAll('.bible-book-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentBookName = idx;
-            renderBibleChapters();
-        };
-        sidebar.appendChild(btn);
-    });
+    const el = $('bibleBooks');
+    if (!el) return;
+    el.innerHTML = BIBLE_DATA.map((book, idx) =>
+        `<button class="bible-book-btn ${idx === currentBookIndex ? 'active' : ''}" data-book-idx="${idx}">${escapeHtml(book.name || '')}</button>`
+    ).join('');
+    el.onclick = (e) => {
+        const btn = e.target.closest('.bible-book-btn');
+        if (!btn) return;
+        stopTTS();
+        currentBookIndex = parseInt(btn.dataset.bookIdx, 10);
+        currentChapterIndex = 0;
+        renderBibleBooks();
+        renderBibleChapters();
+        renderBibleVerses();
+    };
 }
 
 function renderBibleChapters() {
-    const chaptersContainer = $('bibleChapters');
-    const versesContainer = $('bibleVerses');
-    if (!chaptersContainer || !BIBLE_DATA) return;
-    chaptersContainer.innerHTML = '';
-    versesContainer.innerHTML = '<p style="color: var(--text-muted); font-family: \'Inter\', sans-serif;">Selecione um capítulo.</p>';
-    const ttsBar = $('ttsBar');
-    if (ttsBar) ttsBar.style.display = 'none';
-
-    const book = BIBLE_DATA[currentBookName];
-    const chapters = book.chapters || [];
-    chapters.forEach((_, idx) => {
-        const btn = document.createElement('button');
-        btn.className = 'chapter-btn';
-        btn.textContent = idx + 1;
-        btn.onclick = () => {
-            if (ttsPlaying) stopTTS();
-            chaptersContainer.querySelectorAll('.chapter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentChapterNum = idx;
-            renderBibleVerses();
-        };
-        chaptersContainer.appendChild(btn);
-    });
+    const el = $('bibleChapters');
+    if (!el) return;
+    if (currentBookIndex === null) { el.innerHTML = ''; return; }
+    const book = BIBLE_DATA[currentBookIndex];
+    if (!book || !Array.isArray(book.chapters)) { el.innerHTML = ''; return; }
+    el.innerHTML = book.chapters.map((_, i) =>
+        `<button class="chapter-btn ${i === currentChapterIndex ? 'active' : ''}" data-chapter-idx="${i}" aria-label="Capítulo ${i+1}">${i + 1}</button>`
+    ).join('');
+    el.onclick = (e) => {
+        const btn = e.target.closest('.chapter-btn');
+        if (!btn) return;
+        stopTTS();
+        currentChapterIndex = parseInt(btn.dataset.chapterIdx, 10);
+        renderBibleChapters();
+        renderBibleVerses();
+    };
 }
 
 function renderBibleVerses() {
-    const container = $('bibleVerses');
-    if (!container || !BIBLE_DATA) return;
-    const book = BIBLE_DATA[currentBookName];
-    const verses = book.chapters[currentChapterNum] || [];
-    container.innerHTML = '';
-    verses.forEach((text, i) => {
-        const p = document.createElement('p');
-        p.innerHTML = `<span class="verse-num">${i + 1}</span> ${escapeHtml(text)}`;
-        container.appendChild(p);
-    });
-    const ttsBar = $('ttsBar');
-    if (ttsBar) ttsBar.style.display = 'flex';
-    updateTTSButton();
-    container.parentElement.scrollTop = 0;
+    const el = $('bibleVerses');
+    if (!el) return;
+    if (currentBookIndex === null || !BIBLE_DATA) { el.innerHTML = ''; return; }
+    const book = BIBLE_DATA[currentBookIndex];
+    const chapter = book?.chapters?.[currentChapterIndex];
+    if (!chapter) { el.innerHTML = '<p style="color:var(--text-muted)">Capítulo não encontrado.</p>'; return; }
+    el.innerHTML = `<h2 style="font-size:22px;margin-bottom:24px;font-family:Inter,sans-serif;font-weight:800;letter-spacing:-.5px;">${escapeHtml(book.name)} ${currentChapterIndex + 1}</h2>` +
+        chapter.map((verse, i) => `<p><span class="verse-num">${i + 1}</span>${escapeHtml(verse)}</p>`).join('');
 }
 
-function updateTTSButton() {
-    const btn = $('ttsBtn');
-    if (!btn) return;
-    if (ttsPlaying) {
-        btn.innerHTML = '⏹️ Parar leitura';
-        btn.classList.add('playing');
-    } else {
-        btn.innerHTML = '🔊 Ouvir capítulo';
-        btn.classList.remove('playing');
+/* ============================================================
+   TTS
+============================================================ */
+if ('speechSynthesis' in window) {
+    speechSynthesis.onvoiceschanged = () => { _voiceCache = speechSynthesis.getVoices(); };
+    _voiceCache = speechSynthesis.getVoices();
+}
+function getVoicesCached() {
+    if (!_voiceCache || _voiceCache.length === 0) {
+        _voiceCache = speechSynthesis.getVoices();
     }
+    return _voiceCache;
+}
+function splitForTTS(text, maxLen = 180) {
+    if (text.length <= maxLen) return [text];
+    const sentences = text.split(/(?<=[.!?;:])\s+/).filter(Boolean);
+    const result = [];
+    for (const s of sentences) {
+        if (s.length <= maxLen) { result.push(s); continue; }
+        const parts = s.split(/(?<=[,])\s+/).filter(Boolean);
+        let cur = '';
+        for (const p of parts) {
+            if ((cur + ' ' + p).trim().length > maxLen) {
+                if (cur) result.push(cur);
+                cur = p;
+            } else cur = cur ? cur + ' ' + p : p;
+        }
+        if (cur) result.push(cur);
+    }
+    return result;
 }
 
 function toggleTTS() {
     if (ttsPlaying) { stopTTS(); return; }
-    if (!('speechSynthesis' in window)) { toast('Áudio não suportado neste aparelho.', 'error'); return; }
-    if (currentBookName === null || currentChapterNum === null) return;
+    if (!BIBLE_DATA || currentBookIndex === null) { toast('Selecione um capítulo.', 'error'); return; }
+    if (!('speechSynthesis' in window)) { toast('Leitura por voz não suportada.', 'error'); return; }
+    const chapter = BIBLE_DATA[currentBookIndex]?.chapters?.[currentChapterIndex];
+    if (!chapter) return;
 
-    const verses = BIBLE_DATA[currentBookName].chapters[currentChapterNum];
-    if (!verses || verses.length === 0) { toast('Capítulo vazio.', 'error'); return; }
+    if (!audio.paused) audio.pause();
 
-    const unlock = new SpeechSynthesisUtterance('');
-    unlock.volume = 0;
-    window.speechSynthesis.speak(unlock);
-
-    ttsQueue = verses.map((v, i) => `Verso ${i + 1}. ${v}`);
+    ttsQueue = [];
+    chapter.forEach((verse, i) => {
+        const text = `${i + 1}. ${verse}`;
+        ttsQueue.push(...splitForTTS(text));
+    });
     ttsIndex = 0;
     ttsPlaying = true;
-    updateTTSButton();
-    
-    setTimeout(speakNext, 150);
+    const btn = $('ttsBtn');
+    if (btn) { btn.classList.add('playing'); btn.textContent = '⏸ Pausar Leitura'; }
+    speakNext();
 }
 
 function speakNext() {
     if (!ttsPlaying) return;
-    if (ttsIndex >= ttsQueue.length) {
-        ttsPlaying = false;
-        updateTTSButton();
-        toast('Leitura concluída.', 'success');
-        return;
-    }
+    if (ttsIndex >= ttsQueue.length) { stopTTS(); return; }
     const text = ttsQueue[ttsIndex];
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = 'pt-BR';
-    utter.rate = 0.95;
+    utter.rate = 1;
     utter.pitch = 1;
-    utter.volume = 1;
-
-    const voices = window.speechSynthesis.getVoices();
+    const voices = getVoicesCached();
     const ptVoice = voices.find(v => v.lang.toLowerCase().startsWith('pt'));
     if (ptVoice) utter.voice = ptVoice;
-
-    utter.onend = () => {
-        if (!ttsPlaying) return;
-        ttsIndex++;
-        speakNext();
-    };
+    utter.onend = () => { if (!ttsPlaying) return; ttsIndex++; speakNext(); };
     utter.onerror = (e) => {
         if (e.error === 'interrupted' || e.error === 'canceled') return;
         console.error('TTS error:', e);
-        ttsPlaying = false;
-        updateTTSButton();
-        toast('Erro na leitura. Verifique a voz do sistema.', 'error');
+        ttsIndex++;
+        speakNext();
     };
-    
-    if (window.speechSynthesis.paused) {
-        window.speechSynthesis.resume();
-    }
-    
-    window.speechSynthesis.speak(utter);
+    speechSynthesis.speak(utter);
 }
 
-function stopTTS() {
+function stopTTS(showToast = false) {
     ttsPlaying = false;
-    ttsIndex = 0;
+    if ('speechSynthesis' in window) speechSynthesis.cancel();
     ttsQueue = [];
-    if ('speechSynthesis' in window) {
-        try { window.speechSynthesis.cancel(); } catch (e) {}
-    }
-    updateTTSButton();
+    ttsIndex = 0;
+    const btn = $('ttsBtn');
+    if (btn) { btn.classList.remove('playing'); btn.textContent = '🔊 Ouvir Capítulo'; }
+    if (showToast) toast('Leitura parada.');
 }
 
 /* ============================================================
-   9. YOUTUBE (LISTA + PLAYER + EXCLUIR)
+   YOUTUBE
 ============================================================ */
-function addYoutubeLink() {
+function extractVideoId(url) {
+    if (!url) return null;
+    const patterns = [
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([\w-]{11})/,
+        /^([\w-]{11})$/
+    ];
+    for (const p of patterns) {
+        const m = String(url).match(p);
+        if (m) return m[1];
+    }
+    return null;
+}
+
+async function fetchYtTitle(videoId) {
+    try {
+        const res = await fetchWithTimeout(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`, 10000);
+        if (!res.ok) return null;
+        const data = await res.json();
+        return data.title || null;
+    } catch { return null; }
+}
+
+async function addYoutubeLink() {
     const input = $('ytInput');
     const url = input.value.trim();
+    if (!url) return;
     const id = extractVideoId(url);
     if (!id) { toast('Link do YouTube inválido.', 'error'); return; }
-    if (ytLinks.includes(id)) { toast('Vídeo já salvo.', 'error'); return; }
-    ytLinks.push(id);
-    localStorage.setItem('dauplay_yt', JSON.stringify(ytLinks));
+    if (ytLinks.find(v => v.id === id)) { toast('Vídeo já salvo.', 'error'); return; }
     input.value = '';
+    toast('Buscando informações...');
+    const title = await fetchYtTitle(id);
+    ytLinks.push({ id, title: title || 'Vídeo do YouTube' });
+    localStorage.setItem('dauplay_yt', JSON.stringify(ytLinks));
     renderYoutube();
     toast('Vídeo salvo!', 'success');
 }
@@ -1281,78 +2507,396 @@ function addYoutubeLink() {
 function renderYoutube() {
     const grid = $('ytGrid');
     if (!grid) return;
-    grid.innerHTML = '';
+    const before = ytLinks.length;
+    ytLinks = ytLinks.filter(v => v && v.id && /^[\w-]{11}$/.test(v.id));
+    if (ytLinks.length !== before) localStorage.setItem('dauplay_yt', JSON.stringify(ytLinks));
     if (ytLinks.length === 0) {
-        grid.innerHTML = `<div class="empty-state"><div class="emoji">📺</div><p>Nenhum vídeo salvo ainda.<br>Cole um link do YouTube acima para começar.</p></div>`;
+        grid.innerHTML = '<div class="empty-state"><div class="emoji">📺</div><p>Nenhum vídeo salvo ainda.<br>Cole um link do YouTube acima.</p></div>';
         return;
     }
-    ytLinks.forEach((id) => {
-        const card = document.createElement('div');
-        card.className = 'yt-card';
-        card.onclick = () => openYtPlayer(id);
-        card.innerHTML = `
-            <div style="position:relative;">
-                <img class="yt-thumb" src="https://img.youtube.com/vi/${id}/mqdefault.jpg" alt="">
-                <div class="yt-play-overlay">
-                    <div class="play-circle">
-                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                    </div>
-                </div>
-                <button class="yt-del-btn" onclick="deleteYoutube('${id}', event)" title="Remover Vídeo">
-                    <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                </button>
-            </div>
-            <div class="yt-info">
-                <div class="yt-title">Vídeo do YouTube</div>
-                <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Toque para assistir no app</div>
-            </div>
-        `;
-        grid.appendChild(card);
-    });
+    grid.innerHTML = ytLinks.map(v => `
+        <div class="yt-card" data-video-id="${v.id}">
+            <button class="yt-del-btn" data-action="delete" aria-label="Remover">
+                <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            </button>
+            <img class="yt-thumb" src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg" alt="" loading="lazy">
+            <div class="yt-play-overlay"><div class="play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
+            <div class="yt-info"><div class="yt-title">${escapeHtml(v.title || 'Vídeo do YouTube')}</div></div>
+        </div>
+    `).join('');
 }
 
-function deleteYoutube(id, event) {
-    if (event) event.stopPropagation();
-    if (!confirm('Deseja remover este vídeo da lista?')) return;
-    ytLinks = ytLinks.filter(v => v !== id);
+function deleteYoutube(id) {
+    if (!confirm('Remover este vídeo?')) return;
+    ytLinks = ytLinks.filter(v => v.id !== id);
     localStorage.setItem('dauplay_yt', JSON.stringify(ytLinks));
     renderYoutube();
-    toast('Vídeo removido!', 'success');
+    toast('Vídeo removido.');
 }
 
 function openYtPlayer(videoId) {
-    if (!audio.paused) audio.pause();
+    if (!/^[\w-]{11}$/.test(videoId)) return;
+    if (!audio.paused) stopPlayback();
     if (ttsPlaying) stopTTS();
-    const modal = $('ytModal');
-    const iframe = $('ytIframe');
-    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&playsinline=1&modestbranding=1`;
-    modal.classList.remove('hidden');
+    $('ytIframe').src = `https://www.youtube.com/embed/${videoId}?autoplay=1&playsinline=1&modestbranding=1&rel=0`;
+    $('ytModal').classList.remove('hidden');
 }
 
 function closeYtPlayer() {
-    const modal = $('ytModal');
-    const iframe = $('ytIframe');
-    iframe.src = '';
-    modal.classList.add('hidden');
+    $('ytIframe').src = '';
+    $('ytModal').classList.add('hidden');
 }
 
-function extractVideoId(url) {
-    const m = url.match(/(?:youtu\.be\/|v=|shorts\/|embed\/|live\/)([\w-]{11})/);
-    return m ? m[1] : null;
+$('ytGrid').addEventListener('click', (e) => {
+    const card = e.target.closest('.yt-card');
+    if (!card) return;
+    const id = card.dataset.videoId;
+    if (!id) return;
+    if (e.target.closest('[data-action="delete"]')) {
+        e.stopPropagation();
+        deleteYoutube(id);
+        return;
+    }
+    openYtPlayer(id);
+});
+
+/* ============================================================
+   EXPANDED PLAYER
+============================================================ */
+function openExpanded() {
+    $('expandedPlayer').classList.add('active');
+    startExpandedViz();
+}
+
+function closeExpanded() {
+    $('expandedPlayer').classList.remove('active');
+    if (expandedVizRAF) { cancelAnimationFrame(expandedVizRAF); expandedVizRAF = null; }
+}
+
+function startExpandedViz() {
+    const canvas = $('expandedViz');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    function draw() {
+        const w = canvas.width = canvas.clientWidth * devicePixelRatio;
+        const h = canvas.height = 80 * devicePixelRatio;
+        ctx.clearRect(0, 0, w, h);
+        if (!analyser || audio.paused) {
+            // Idle wave
+            const t = Date.now() / 1000;
+            ctx.strokeStyle = 'rgba(255,255,255,.15)';
+            ctx.lineWidth = 2 * devicePixelRatio;
+            ctx.beginPath();
+            for (let x = 0; x <= w; x += 4) {
+                const y = h/2 + Math.sin(x*0.01 + t*2) * 8 * devicePixelRatio;
+                if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            expandedVizRAF = requestAnimationFrame(draw);
+            return;
+        }
+        analyser.getByteFrequencyData(vizData);
+        const bars = 40;
+        const step = Math.floor(vizData.length / bars);
+        const barW = w / bars * 0.7;
+        const gap = w / bars * 0.3;
+        const gradient = ctx.createLinearGradient(0, 0, 0, h);
+        const dyn = getComputedStyle(document.documentElement).getPropertyValue('--dyn').trim();
+        const dyn2 = getComputedStyle(document.documentElement).getPropertyValue('--dyn-2').trim();
+        gradient.addColorStop(0, `rgba(${dyn2},0.95)`);
+        gradient.addColorStop(1, `rgba(${dyn},0.4)`);
+        ctx.fillStyle = gradient;
+        for (let i = 0; i < bars; i++) {
+            const v = vizData[i * step] / 255;
+            const barH = Math.max(4 * devicePixelRatio, v * h * 0.9);
+            const x = i * (barW + gap) + gap/2;
+            const y = h - barH;
+            const radius = Math.min(barW/2, 4 * devicePixelRatio);
+            ctx.beginPath();
+            ctx.roundRect(x, y, barW, barH, [radius, radius, 0, 0]);
+            ctx.fill();
+        }
+        expandedVizRAF = requestAnimationFrame(draw);
+    }
+    draw();
 }
 
 /* ============================================================
-   10. BOOT
+   COMMAND PALETTE
 ============================================================ */
-loadSongs();
+let paletteItems = [];
+let paletteSelected = 0;
 
-if ('speechSynthesis' in window) {
-    window.speechSynthesis.onvoiceschanged = () => {};
-    window.speechSynthesis.getVoices();
+function openPalette() {
+    $('paletteOverlay').classList.add('active');
+    $('paletteInput').value = '';
+    $('paletteInput').focus();
+    buildPaletteItems('');
 }
 
+function closePalette() {
+    $('paletteOverlay').classList.remove('active');
+}
+
+function buildPaletteItems(query) {
+    const q = query.toLowerCase().trim();
+    const items = [];
+
+    // Navigation
+    const navs = [
+        { icon: '🎵', title: 'Músicas', sub: 'Ir para biblioteca', action: () => goToView('musicas') },
+        { icon: '❤️', title: 'Favoritas', sub: 'Ir para favoritas', action: () => goToView('favoritas') },
+        { icon: '📖', title: 'Bíblia', sub: 'Ir para Bíblia', action: () => goToView('biblia') },
+        { icon: '📺', title: 'YouTube', sub: 'Ir para YouTube', action: () => goToView('youtube') }
+    ];
+
+    // Actions
+    const actions = [
+        { icon: '🎲', title: 'Aleatório', sub: 'Alternar modo aleatório', action: () => toggleShuffle() },
+        { icon: '🔁', title: 'Repetir', sub: 'Alternar repetição', action: () => toggleRepeat() },
+        { icon: '🌙', title: 'Sleep Timer', sub: 'Definir timer de sono', action: () => { closePalette(); toggleSleepMenu(); } },
+        { icon: '☀️', title: 'Tema', sub: 'Alternar tema claro/escuro', action: () => toggleTheme() },
+        { icon: '➕', title: 'Adicionar Música', sub: 'Enviar arquivo de áudio', action: () => { closePalette(); document.getElementById('musicUpload').click(); } },
+        { icon: '⏸️', title: 'Pausar', sub: 'Pausar reprodução', action: () => { if (!audio.paused) togglePlay(); } }
+    ];
+
+    // Filter navigation/actions by query
+    if (q) {
+        [...navs, ...actions].filter(item =>
+            item.title.toLowerCase().includes(q) || item.sub.toLowerCase().includes(q)
+        ).forEach(item => items.push({ ...item, section: 'Ações' }));
+    } else {
+        navs.forEach(item => items.push({ ...item, section: 'Navegar' }));
+        actions.forEach(item => items.push({ ...item, section: 'Ações' }));
+    }
+
+    // Songs
+    const songsFiltered = allSongs.filter(s =>
+        !q || s.title.toLowerCase().includes(q) || (s.artist||'').toLowerCase().includes(q)
+    ).slice(0, 8);
+
+    if (songsFiltered.length > 0) {
+        songsFiltered.forEach(s => {
+            items.push({
+                icon: `<img src="${escapeHtml(s.cover || 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop')}" alt="">`,
+                title: s.title,
+                sub: s.artist || 'Desconhecido',
+                section: q ? 'Músicas' : 'Músicas',
+                action: () => { closePalette(); playSong(s.id); }
+            });
+        });
+    }
+
+    paletteItems = items;
+    paletteSelected = 0;
+    renderPalette();
+}
+
+function renderPalette() {
+    const results = $('paletteResults');
+    if (paletteItems.length === 0) {
+        results.innerHTML = '<div class="palette-empty"><span class="emoji">🔍</span>Nenhum resultado</div>';
+        return;
+    }
+    let html = '';
+    let lastSection = '';
+    paletteItems.forEach((item, i) => {
+        if (item.section !== lastSection) {
+            html += `<div class="palette-section-label">${escapeHtml(item.section)}</div>`;
+            lastSection = item.section;
+        }
+        html += `
+            <div class="palette-item ${i === paletteSelected ? 'selected' : ''}" data-idx="${i}">
+                <div class="palette-item-icon">${item.icon}</div>
+                <div class="palette-item-content">
+                    <div class="palette-item-title">${escapeHtml(item.title)}</div>
+                    <div class="palette-item-sub">${escapeHtml(item.sub)}</div>
+                </div>
+            </div>
+        `;
+    });
+    results.innerHTML = html;
+
+    // Attach click handlers
+    results.querySelectorAll('.palette-item').forEach(el => {
+        el.addEventListener('click', () => {
+            const idx = parseInt(el.dataset.idx);
+            paletteItems[idx].action();
+        });
+    });
+}
+
+function goToView(view) {
+    closePalette();
+    const nav = document.querySelector(`.nav-item[data-view="${view}"]`);
+    if (nav) nav.click();
+}
+
+$('paletteInput').addEventListener('input', (e) => {
+    buildPaletteItems(e.target.value);
+});
+
+$('paletteInput').addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        paletteSelected = Math.min(paletteItems.length - 1, paletteSelected + 1);
+        renderPalette();
+        scrollSelected();
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        paletteSelected = Math.max(0, paletteSelected - 1);
+        renderPalette();
+        scrollSelected();
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (paletteItems[paletteSelected]) paletteItems[paletteSelected].action();
+    } else if (e.key === 'Escape') {
+        closePalette();
+    }
+});
+
+function scrollSelected() {
+    const el = document.querySelector('.palette-item.selected');
+    if (el) el.scrollIntoView({ block: 'nearest' });
+}
+
+/* ============================================================
+   SLEEP TIMER
+============================================================ */
+function toggleSleepMenu(e) {
+    if (e) e.stopPropagation();
+    $('sleepMenu').classList.toggle('active');
+}
+
+document.querySelectorAll('#sleepMenu button').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const val = btn.dataset.sleep;
+        if (sleepTimerId) { clearTimeout(sleepTimerId); sleepTimerId = null; }
+        sleepMode = val;
+        if (val === '0') {
+            sleepEndAt = null;
+            toast('Sleep Timer desativado');
+        } else if (val === 'end') {
+            sleepEndAt = null;
+            toast('🌙 Vai pausar no fim da faixa');
+        } else {
+            const mins = parseInt(val);
+            sleepEndAt = Date.now() + mins * 60000;
+            sleepTimerId = setTimeout(() => {
+                audio.pause();
+                sleepMode = 'off';
+                updateSleepUI();
+                toast('🌙 Sleep Timer: pausado');
+            }, mins * 60000);
+            toast(`🌙 Sleep Timer: ${mins} min`);
+        }
+        updateSleepUI();
+        $('sleepMenu').classList.remove('active');
+    });
+});
+
+function updateSleepUI() {
+    const btn = $('sleepBtn');
+    btn.classList.toggle('active', sleepMode !== 'off' && sleepMode !== '0');
+    document.querySelectorAll('#sleepMenu button').forEach(b => {
+        b.classList.toggle('active', b.dataset.sleep === sleepMode);
+    });
+}
+
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('#sleepMenu') && !e.target.closest('#sleepBtn')) {
+        $('sleepMenu').classList.remove('active');
+    }
+});
+
+/* ============================================================
+   SEARCH (header)
+============================================================ */
+$('globalSearch').addEventListener('input', (e) => {
+    const q = e.target.value.toLowerCase().trim();
+    // Auto switch to music view
+    const musicNav = document.querySelector('.nav-item[data-view="musicas"]');
+    if (!musicNav.classList.contains('active') && q) musicNav.click();
+
+    const filtered = q ? allSongs.filter(s =>
+        s.title.toLowerCase().includes(q) || (s.artist||'').toLowerCase().includes(q)
+    ) : allSongs;
+
+    renderSongsGrid($('musicGrid'), filtered);
+});
+
+/* ============================================================
+   KEYBOARD SHORTCUTS
+============================================================ */
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeYtPlayer();
+    // Cmd/Ctrl+K opens palette
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        openPalette();
+        return;
+    }
+    // Escape
+    if (e.key === 'Escape') {
+        if ($('paletteOverlay').classList.contains('active')) { closePalette(); return; }
+        if (!$('ytModal').classList.contains('hidden')) { closeYtPlayer(); return; }
+        if ($('expandedPlayer').classList.contains('active')) { closeExpanded(); return; }
+    }
+    // Ignore in inputs
+    if (['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
+    if ($('paletteOverlay').classList.contains('active')) return;
+
+    switch (e.key.toLowerCase()) {
+        case ' ':
+            e.preventDefault(); togglePlay(); break;
+        case 'arrowright':
+            if (audio.duration) { audio.currentTime = Math.min(audio.duration, audio.currentTime + 5); e.preventDefault(); }
+            break;
+        case 'arrowleft':
+            if (audio.duration) { audio.currentTime = Math.max(0, audio.currentTime - 5); e.preventDefault(); }
+            break;
+        case 'm': toggleMute(); break;
+        case 'l': toggleFavorite(currentId); break;
+        case 'f': openExpanded(); break;
+        case '1': goToView('musicas'); break;
+        case '2': goToView('favoritas'); break;
+        case '3': goToView('biblia'); break;
+        case '4': goToView('youtube'); break;
+    }
+});
+
+/* ============================================================
+   BOOT
+============================================================ */
+document.addEventListener('DOMContentLoaded', async () => {
+    // Load favorites
+    try {
+        const savedFavs = JSON.parse(localStorage.getItem('dauplay_favs') || '[]');
+        favorites = new Set(Array.isArray(savedFavs) ? savedFavs : []);
+    } catch { favorites = new Set(); }
+
+    // Load YouTube
+    try {
+        const savedYt = JSON.parse(localStorage.getItem('dauplay_yt') || '[]');
+        ytLinks = Array.isArray(savedYt) ? savedYt.filter(v => v && v.id && /^[\w-]{11}$/.test(v.id)) : [];
+    } catch { ytLinks = []; }
+
+    // Load recent
+    try {
+        recentTracks = JSON.parse(localStorage.getItem('dauplay_recent') || '[]');
+    } catch { recentTracks = []; }
+
+    await loadSongs();
+    setupGridDelegation($('musicGrid'));
+    setupGridDelegation($('favGrid'));
+    setupProgressBar();
+    initVolume();
+
+    $('ytInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') addYoutubeLink();
+    });
+
+    // Preload default color
+    setDynamicColor(29, 185, 84);
 });
 </script>
 </body>
